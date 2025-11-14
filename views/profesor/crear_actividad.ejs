@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html class="light" lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Crear Nueva Actividad</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#4396ea",
+              "background-light": "#f6f7f8",
+
+              "background-dark": "#111921",
+            },
+            fontFamily: {
+              display: ["Inter", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 400,
+          "GRAD" 0,
+          "opsz" 24;
+      }
+    </style>
+  </head>
+
+  <body class="font-display bg-background-light dark:bg-background-dark">
+    <div class="relative flex min-h-screen w-full">
+      <%- include('../partials/siderbar_profesor', { active: active, user: user
+      }) %>
+
+      <main class="flex-1 p-8">
+        <div class="max-w-4xl mx-auto">
+          <header class="mb-8">
+            <p
+              class="text-slate-900 dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]"
+            >
+              Crear Nueva Actividad
+            </p>
+            <p
+              class="text-slate-500 dark:text-slate-400 text-base font-normal leading-normal mt-2"
+            >
+              Completa los detalles y añade las preguntas.
+            </p>
+          </header>
+
+          <form
+            action="/profesor/actividades/crear"
+            method="POST"
+            enctype="multipart/form-data"
+            class="space-y-8"
+          >
+            <div
+              class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6"
+            >
+              <h3
+                class="text-lg font-bold text-slate-900 dark:text-white mb-4 border-b pb-2"
+              >
+                Detalles de la Lectura
+              </h3>
+              <div class="space-y-4 pt-4">
+                <div>
+                  <label class="text-sm font-medium..." for="titulo"
+                    >Título</label
+                  >
+                  <input
+                    class="mt-1 block w-full rounded-lg..."
+                    id="titulo"
+                    name="titulo"
+                    type="text"
+                    required
+                  />
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label class="text-sm font-medium..." for="tema"
+                      >Tema</label
+                    >
+                    <input
+                      class="mt-1 block w-full rounded-lg..."
+                      id="tema"
+                      name="tema"
+                      type="text"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label class="text-sm font-medium..." for="dificultad"
+                      >Dificultad</label
+                    >
+                    <select
+                      class="mt-1 block w-full rounded-lg..."
+                      id="dificultad"
+                      name="dificultad"
+                      required
+                    >
+                      <option value="Fácil">Fácil</option>
+                      <option value="Intermedio">Intermedio</option>
+                      <option value="Difícil">Difícil</option>
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label class="text-sm font-medium..." for="imagen"
+                    >Imagen de Portada</label
+                  >
+                  <input
+                    class="mt-1 block w-full text-sm..."
+                    id="imagen"
+                    name="imagen"
+                    type="file"
+                    accept="image/*"
+                  />
+                </div>
+                <div>
+                  <label class="text-sm font-medium..." for="descripcion"
+                    >Texto de la Lectura</label
+                  >
+                  <textarea
+                    class="mt-1 block w-full rounded-lg..."
+                    id="descripcion"
+                    name="descripcion"
+                    rows="10"
+                    required
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6"
+            >
+              <h3
+                class="text-lg font-bold text-slate-900 dark:text-white mb-4 border-b pb-2"
+              >
+                Preguntas de Comprensión
+              </h3>
+
+              <div id="preguntas-container" class="space-y-6 pt-4">
+                <div
+                  class="pregunta-bloque border dark:border-slate-700 rounded-lg p-4 relative"
+                  data-index="0"
+                >
+                  <button
+                    type="button"
+                    onclick="eliminarPregunta(this)"
+                    class="absolute top-2 right-2 text-red-500 hover:text-red-700"
+                  >
+                    <span class="material-symbols-outlined">delete</span>
+                  </button>
+
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div class="md:col-span-2">
+                      <label
+                        class="text-sm font-medium..."
+                        for="preguntas[0][preguntaTexto]"
+                        >Texto de la Pregunta 1</label
+                      >
+                      <input
+                        class="mt-1 block w-full rounded-lg..."
+                        name="preguntas[0][preguntaTexto]"
+                        type="text"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label
+                        class="text-sm font-medium..."
+                        for="preguntas[0][puntaje]"
+                        >Puntaje</label
+                      >
+                      <input
+                        class="mt-1 block w-full rounded-lg..."
+                        name="preguntas[0][puntaje]"
+                        type="number"
+                        value="10"
+                        min="1"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <p class="text-sm font-medium mb-2">Alternativas:</p>
+                  <div
+                    class="alternativas-container space-y-2"
+                    data-pregunta-index="0"
+                  >
+                    <div class="alternativa-item flex items-center gap-2">
+                      <input
+                        type="radio"
+                        name="preguntas[0][correcta]"
+                        value="0"
+                        class="form-radio text-primary focus:ring-primary"
+                        required
+                      />
+                      <input
+                        type="text"
+                        name="preguntas[0][alternativas][0][texto]"
+                        placeholder="Texto alternativa"
+                        class="flex-grow rounded-lg text-sm..."
+                      />
+                      <button
+                        type="button"
+                        onclick="eliminarAlternativa(this)"
+                        class="text-red-500 hover:text-red-700 text-sm"
+                      >
+                        <span class="material-symbols-outlined text-base"
+                          >remove_circle_outline</span
+                        >
+                      </button>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onclick="agregarAlternativa(this)"
+                    class="mt-2 text-sm text-primary hover:underline"
+                  >
+                    + Añadir Alternativa
+                  </button>
+                </div>
+              </div>
+
+              <div class="mt-6">
+                <button
+                  type="button"
+                  onclick="agregarPregunta()"
+                  class="flex items-center gap-2 text-sm font-medium text-primary hover:underline"
+                >
+                  <span class="material-symbols-outlined"
+                    >add_circle_outline</span
+                  >
+                  Añadir Otra Pregunta
+                </button>
+              </div>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-4">
+              <a
+                href="/profesor/actividades"
+                class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-lg h-10 px-6 bg-slate-200 text-slate-700..."
+              >
+                Cancelar
+              </a>
+              <button
+                class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-lg h-10 px-6 bg-primary text-white text-sm font-medium"
+                type="submit"
+              >
+                <span class="truncate">Publicar Actividad</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      let preguntaIndex = 1; // Contador para nombres únicos de preguntas
+
+      function agregarPregunta() {
+        const container = document.getElementById("preguntas-container");
+        const nuevoIndex = preguntaIndex++;
+        const template = `
+      <div class="pregunta-bloque border dark:border-slate-700 rounded-lg p-4 relative" data-index="${nuevoIndex}">
+        <button type="button" onclick="eliminarPregunta(this)" class="absolute top-2 right-2 text-red-500 hover:text-red-700">
+          <span class="material-symbols-outlined">delete</span>
+        </button>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <div class="md:col-span-2">
+            <label class="text-sm font-medium..." for="preguntas[${nuevoIndex}][preguntaTexto]">Texto de la Pregunta ${nuevoIndex + 1}</label>
+            <input class="mt-1 block w-full rounded-lg..." name="preguntas[${nuevoIndex}][preguntaTexto]" type="text" required/>
+          </div>
+          <div>
+            <label class="text-sm font-medium..." for="preguntas[${nuevoIndex}][puntaje]">Puntaje</label>
+            <input class="mt-1 block w-full rounded-lg..." name="preguntas[${nuevoIndex}][puntaje]" type="number" value="10" min="1" required/>
+          </div>
+        </div>
+        <p class="text-sm font-medium mb-2">Alternativas:</p>
+        <div class="alternativas-container space-y-2" data-pregunta-index="${nuevoIndex}">
+          <div class="alternativa-item flex items-center gap-2">
+            <input type="radio" name="preguntas[${nuevoIndex}][correcta]" value="0" class="form-radio text-primary focus:ring-primary" required>
+            <input type="text" name="preguntas[${nuevoIndex}][alternativas][0][texto]" placeholder="Texto alternativa" class="flex-grow rounded-lg text-sm...">
+             <button type="button" onclick="eliminarAlternativa(this)" class="text-red-500 hover:text-red-700 text-sm">
+                <span class="material-symbols-outlined text-base">remove_circle_outline</span>
+              </button>
+          </div>
+        </div>
+        <button type="button" onclick="agregarAlternativa(this)" class="mt-2 text-sm text-primary hover:underline">
+          + Añadir Alternativa
+        </button>
+      </div>`;
+        container.insertAdjacentHTML("beforeend", template);
+        actualizarIndices(); // Reajustar nombres si se borran preguntas
+      }
+
+      function eliminarPregunta(button) {
+        const bloque = button.closest(".pregunta-bloque");
+        if (bloque) {
+          bloque.remove();
+          actualizarIndices(); // Reajustar nombres
+        }
+      }
+
+      function agregarAlternativa(button) {
+        const container = button.previousElementSibling; // El div 'alternativas-container'
+        const preguntaIndex = container.dataset.preguntaIndex;
+        const alternativaIndex = container.children.length; // Nuevo índice es la cantidad actual
+        const template = `
+      <div class="alternativa-item flex items-center gap-2">
+        <input type="radio" name="preguntas[${preguntaIndex}][correcta]" value="${alternativaIndex}" class="form-radio text-primary focus:ring-primary">
+        <input type="text" name="preguntas[${preguntaIndex}][alternativas][${alternativaIndex}][texto]" placeholder="Texto alternativa" class="flex-grow rounded-lg text-sm...">
+        <button type="button" onclick="eliminarAlternativa(this)" class="text-red-500 hover:text-red-700 text-sm">
+           <span class="material-symbols-outlined text-base">remove_circle_outline</span>
+        </button>
+      </div>`;
+        container.insertAdjacentHTML("beforeend", template);
+      }
+
+      function eliminarAlternativa(button) {
+        const item = button.closest(".alternativa-item");
+        const container = item.parentElement;
+        if (container.children.length > 1) {
+          // No permitir borrar la última alternativa
+          item.remove();
+          // Reajustar los 'value' de los radio buttons
+          const radios = container.querySelectorAll('input[type="radio"]');
+          radios.forEach((radio, index) => {
+            radio.value = index;
+          });
+          // Reajustar los names de los inputs de texto
+          const inputs = container.querySelectorAll('input[type="text"]');
+          const preguntaIndex = container.dataset.preguntaIndex;
+          inputs.forEach((input, index) => {
+            input.name = `preguntas[${preguntaIndex}][alternativas][${index}][texto]`;
+          });
+        } else {
+          alert("Cada pregunta debe tener al menos una alternativa.");
+        }
+      }
+
+      // Función para reajustar los índices en los names si se borran preguntas intermedias
+      function actualizarIndices() {
+        const bloques = document.querySelectorAll(".pregunta-bloque");
+        preguntaIndex = bloques.length; // Actualizamos el contador global
+        bloques.forEach((bloque, pIndex) => {
+          bloque.dataset.index = pIndex;
+          bloque.querySelector(`label[for^='preguntas[']`).textContent =
+            `Texto de la Pregunta ${pIndex + 1}`;
+          bloque.querySelector(
+            `input[name^='preguntas['][name$='[preguntaTexto]']`,
+          ).name = `preguntas[${pIndex}][preguntaTexto]`;
+          bloque.querySelector(
+            `input[name^='preguntas['][name$='[puntaje]']`,
+          ).name = `preguntas[${pIndex}][puntaje]`;
+
+          const altContainer = bloque.querySelector(".alternativas-container");
+          altContainer.dataset.preguntaIndex = pIndex;
+          const alternativasItems =
+            altContainer.querySelectorAll(".alternativa-item");
+          alternativasItems.forEach((altItem, aIndex) => {
+            altItem.querySelector('input[type="radio"]').name =
+              `preguntas[${pIndex}][correcta]`;
+            altItem.querySelector('input[type="radio"]').value = aIndex;
+            altItem.querySelector('input[type="text"]').name =
+              `preguntas[${pIndex}][alternativas][${aIndex}][texto]`;
+          });
+        });
+      }
+    </script>
+  </body>
+</html>

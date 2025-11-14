@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Dashboard Estudiante</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#4396ea",
+              "background-light": "#f6f7f8",
+              "background-dark": "#111921",
+            },
+            fontFamily: {
+              display: ["Inter", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 400,
+          "GRAD" 0,
+          "opsz" 24;
+      }
+    </style>
+  </head>
+  <body class="font-display bg-background-light dark:bg-background-dark">
+    <div class="relative flex min-h-screen w-full">
+      <%- include('../partials/siderbar_estudiante', { active: active, user:
+      user }) %>
+
+      <main class="flex-1 p-8">
+        <div class="max-w-4xl mx-auto">
+          <header class="mb-8">
+            <p
+              class="text-slate-900 dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]"
+            >
+              ¡Hola,
+              <%= user.nombre %>!
+            </p>
+            <p
+              class="text-slate-500 dark:text-slate-400 text-base font-normal leading-normal mt-2"
+            >
+              ¡Qué bueno verte de nuevo! Sigamos aprendiendo.
+            </p>
+          </header>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div
+              class="md:col-span-3 p-6 @container bg-white dark:bg-slate-900 rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.05)] dark:shadow-[0_4px_12px_rgba(0,0,0,0.2)]"
+            >
+              <div
+                class="flex flex-col items-stretch justify-start @lg:flex-row @lg:items-center @lg:justify-between gap-4"
+              >
+                <div class="flex items-center gap-4">
+                  <div
+                    class="flex items-center justify-center size-12 bg-orange-400/20 rounded-full"
+                  >
+                    <span class="text-2xl text-orange-500"
+                      ><%= pendingCount %></span
+                    >
+                  </div>
+                  <div class="flex flex-col">
+                    <p
+                      class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]"
+                    >
+                      Actividades Pendientes
+                    </p>
+                    <p
+                      class="text-slate-500 dark:text-slate-400 text-base font-normal leading-normal"
+                    >
+                      <% if (pendingCount === 0) { %>
+                      ¡Estás al día! No tienes actividades pendientes.
+                      <% } else if (pendingCount === 1)
+                      { %>
+                      Tienes 1 actividad nueva esperando por ti.
+                      <% } else
+                      { %>
+                      Tienes
+                      <%= pendingCount %>
+                      actividades nuevas esperando por ti.
+                      <% } %>
+                    </p>
+                  </div>
+                </div>
+                <a
+                  href="/actividades"
+                  class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium leading-normal transition-colors"
+                >
+                  <span class="truncate">Ir a mis actividades</span>
+                </a>
+              </div>
+            </div>
+
+            <div
+              class="md:col-span-3 p-6 bg-white dark:bg-slate-900 rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.05)] dark:shadow-[0_4px_12px_rgba(0,0,0,0.2)]"
+            >
+              <p
+                class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] mb-6"
+              >
+                Resumen de Progreso
+              </p>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                <div class="flex flex-col items-center gap-4">
+                  <div class="relative size-32">
+                    <svg
+                      class="size-full -rotate-90"
+                      height="36"
+                      viewbox="0 0 36 36"
+                      width="36"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <circle
+                        class="stroke-slate-200 dark:stroke-slate-700"
+                        cx="18"
+                        cy="18"
+                        fill="none"
+                        r="16"
+                        stroke-width="3"
+                      ></circle>
+                      <circle
+                        class="stroke-[#50E3C2] transition-stroke-dashoffset duration-500"
+                        cx="18"
+                        cy="18"
+                        fill="none"
+                        r="16"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                        stroke-dasharray="100"
+                        stroke-dashoffset="<%= 100 - averagePrecision %>"
+                      ></circle>
+                    </svg>
+                    <div
+                      class="absolute inset-0 flex items-center justify-center"
+                    >
+                      <span
+                        class="text-2xl font-bold text-slate-800 dark:text-slate-100"
+                        ><%= averagePrecision %>%</span
+                      >
+                    </div>
+                  </div>
+                  <p
+                    class="text-slate-600 dark:text-slate-300 text-base font-medium leading-normal text-center"
+                  >
+                    Promedio de Precisión
+                  </p>
+                </div>
+
+                <div
+                  class="flex flex-col items-center justify-center gap-4 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg"
+                >
+                  <span
+                    class="text-5xl font-extrabold text-primary dark:text-primary"
+                    ><%= completedThisMonthCount %></span
+                  >
+                  <p
+                    class="text-slate-600 dark:text-slate-300 text-base font-medium leading-normal text-center"
+                  >
+                    Actividades Completadas este mes
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

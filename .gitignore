@@ -1,0 +1,18 @@
+# Dependencias de Node
+node_modules/
+
+# Archivos de caché y logs
+npm-debug.log*
+yarn-error.log
+
+# Archivos de entorno (¡MUY IMPORTANTE!)
+# Contiene tus contraseñas de base de datos y llaves de API
+.env
+
+# Caché de Python
+__pycache__/
+*.pyc
+
+# Entornos virtuales de Python
+.venv/
+venv/

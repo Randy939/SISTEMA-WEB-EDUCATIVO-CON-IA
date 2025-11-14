@@ -1,0 +1,106 @@
+<%
+  // Definimos las clases CSS para no repetirlas
+  const normalClass = "flex items-center gap-3 px-3 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg";
+  const activeClass = "flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/20 text-primary dark:bg-primary/30";
+  // Definimos los estilos de los iconos
+  const normalIcon = "";
+  const activeIcon = "font-variation-settings: 'FILL' 1;";
+%>
+
+<aside
+  class="flex w-64 flex-col bg-white dark:bg-slate-900/70 p-4 border-r border-slate-200 dark:border-slate-800"
+>
+  <div class="flex flex-col gap-4">
+    <div class="flex gap-3 items-center px-3 py-2">
+      <div
+        class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
+        data-alt="professor avatar"
+        style="background-image: url(&quot;<%= user.avatarUrl %>&quot;)"
+      ></div>
+      <div class="flex flex-col">
+        <h1
+          class="text-slate-900 dark:text-white text-base font-medium leading-normal"
+        >
+          <%= user.nombre %>
+        </h1>
+        <p
+          class="text-slate-500 dark:text-slate-400 text-sm font-normal leading-normal"
+        >
+          Profesor
+        </p>
+      </div>
+    </div>
+
+    <nav class="flex flex-col gap-2 mt-4">
+      <a
+        class="<%= (active === 'inicio') ? activeClass : normalClass %>"
+        href="/profesor/dashboard"
+      >
+        <span
+          class="material-symbols-outlined"
+          style="<%= (active === 'inicio') ? activeIcon : normalIcon %>"
+          >home</span
+        >
+        <p class="text-sm font-medium leading-normal">Inicio</p>
+      </a>
+
+      <a
+        class="<%= (active === 'estudiantes') ? activeClass : normalClass %>"
+        href="/profesor/estudiantes"
+      >
+        <span
+          class="material-symbols-outlined"
+          style="<%= (active === 'estudiantes') ? activeIcon : normalIcon %>"
+          >school</span
+        >
+        <p class="text-sm font-medium leading-normal">Gestión de Estudiantes</p>
+      </a>
+
+      <a
+        class="<%= (active === 'actividades') ? activeClass : normalClass %>"
+        href="/profesor/actividades"
+      >
+        <span
+          class="material-symbols-outlined"
+          style="<%= (active === 'actividades') ? activeIcon : normalIcon %>"
+          >auto_stories</span
+        >
+        <p class="text-sm font-medium leading-normal">Gestión de Actividades</p>
+      </a>
+
+      <a
+        class="<%= (active === 'reportes') ? activeClass : normalClass %>"
+        href="/profesor/reportes"
+      >
+        <span
+          class="material-symbols-outlined"
+          style="<%= (active === 'reportes') ? activeIcon : normalIcon %>"
+          >bar_chart</span
+        >
+        <p class="text-sm font-medium leading-normal">Progreso y Reportes</p>
+      </a>
+
+      <a
+        class="<%= (active === 'perfil') ? activeClass : normalClass %>"
+        href="/profesor/perfil"
+      >
+        <span
+          class="material-symbols-outlined"
+          style="<%= (active === 'perfil') ? activeIcon : normalIcon %>"
+          >person</span
+        >
+        <p class="text-sm font-medium leading-normal">Mi Perfil</p>
+      </a>
+    </nav>
+  </div>
+
+  <div class="mt-auto">
+    <a
+      class="flex items-center gap-3 px-3 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
+      href="/logout"
+    >
+      <span class="material-symbols-outlined">logout</span>
+      <p class="text-sm font-medium leading-normal">Cerrar Sesión</p>
+    </a>
+  </div>
+</aside>
