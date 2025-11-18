@@ -42,12 +42,14 @@
     <link rel="stylesheet" href="/css/main.css" />
   </head>
 
-  <body class="font-display bg-background-light dark:bg-background-dark">
-    <div class="relative flex min-h-screen w-full">
+  <body
+    class="bg-background-light dark:bg-background-dark font-display text-[#0e141b] dark:text-slate-200 h-screen overflow-hidden"
+  >
+    <div class="flex h-full w-full">
       <%- include('../partials/siderbar_estudiante', { active: active, user:
       user }) %>
 
-      <main class="flex-1 p-8">
+      <main class="flex-1 p-8 h-full overflow-y-auto">
         <div class="max-w-3xl mx-auto">
           <header class="mb-8">
             <a
