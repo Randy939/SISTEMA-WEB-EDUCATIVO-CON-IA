@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html class="light" lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Contraseña Olvidada</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#4396ea",
+              "background-light": "#f6f7f8",
+              "background-dark": "#111921",
+            },
+            fontFamily: {
+              display: ["Inter", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 400,
+          "GRAD" 0,
+          "opsz" 24;
+        font-size: 24px;
+      }
+    </style>
+  </head>
+  <body class="font-display">
+    <div
+      class="relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark group/design-root overflow-x-hidden"
+    >
+      <div class="layout-container flex h-full grow flex-col">
+        <div class="flex flex-1 items-center justify-center p-4 sm:p-6 lg:p-8">
+          <div
+            class="flex w-full max-w-md flex-col items-center gap-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-background-dark/50 sm:p-8"
+          >
+            <div class="flex flex-col items-center gap-2">
+              <h1
+                class="text-slate-900 dark:text-slate-50 tracking-light text-[32px] font-bold leading-tight text-center"
+              >
+                Recuperar Contraseña
+              </h1>
+              <p
+                class="text-slate-600 dark:text-slate-400 text-base text-center"
+              >
+                Ingresa tu correo y te enviaremos un enlace para resetear tu
+                contraseña.
+              </p>
+              <% if (typeof errorMessage !== 'undefined' && errorMessage) { %>
+              <div
+                class="w-full bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded text-center"
+                role="alert"
+              >
+                <span class="block sm:inline"><%= errorMessage %></span>
+              </div>
+              <% } %>
+
+              <% if (typeof successMessage !== 'undefined' && successMessage) { %>
+              <div
+                class="w-full bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded text-center"
+                role="alert"
+              >
+                <span class="block sm:inline"><%= successMessage %></span>
+              </div>
+              <% } %>
+              <form
+                id="forgotPasswordForm"
+                class="flex w-full flex-col gap-4"
+                method="POST"
+                action="/contrasena_olvidada"
+                autocomplete="off"
+              >
+                <div class="flex w-full flex-col gap-1.5">
+                  <label
+                    class="text-slate-800 dark:text-slate-200 text-sm font-medium leading-normal"
+                    for="email"
+                    >Correo Electrónico Institucional</label
+                  >
+                  <div class="relative flex w-full items-center">
+                    <span
+                      class="material-symbols-outlined absolute left-4 text-slate-400 dark:text-slate-500"
+                      >person</span
+                    >
+                    <input
+                      class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-slate-50 focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-slate-700 bg-background-light dark:bg-slate-800 focus:border-primary dark:focus:border-primary h-12 placeholder:text-slate-400 dark:placeholder:text-slate-500 pl-12 pr-4 text-base font-normal leading-normal"
+                      id="email"
+                      name="email"
+                      autocomplete="off"
+                      placeholder="Ingresa tu correo institucional"
+                      type="email"
+                      required
+                    />
+                  </div>
+                </div>
+                <button
+                  class="flex min-w-[84px] w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-5 mt-4 bg-primary text-slate-50 text-base font-bold leading-normal tracking-[0.015em] transition-colors hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 dark:focus:ring-offset-background-dark"
+                  type="submit"
+                >
+                  <span class="truncate">Enviar Enlace</span>
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      window.addEventListener("pageshow", function (event) {
+        // Comprueba si la página se cargó desde el bfcache (botón "Atrás")
+        if (event.persisted) {
+          // Espera a que el navegador termine de rellenar el formulario
+          setTimeout(function () {
+            // 1. Resetea el formulario
+            const form = document.getElementById("forgotPasswordForm");
+            if (form) {
+              form.reset();
+            }
+
+            // 2. Borra manualmente el valor (doble seguridad)
+            const emailInput = document.getElementById("email");
+            if (emailInput) {
+              emailInput.value = "";
+            }
+          }, 0);
+        }
+      });
+    </script>
+  </body>
+</html>

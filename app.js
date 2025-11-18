@@ -7,7 +7,8 @@ const connectDB = require("./config/database");
 const session = require("express-session"); // <-- NUEVO
 const MongoStore = require("connect-mongo"); // <-- NUEVO
 const { mongoURI } = require("./config/key");
-const helmet = require("helmet"); // <-- NUEVO (para la sesión)
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit"); // <-- NUEVO (para la sesión)
 
 // Importar nuestras rutas
 const authRoutes = require("./routes/auth_Routes");
@@ -25,7 +26,40 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
 // --- Middlewares ---
-app.use(helmet({ contentSecurityPolicy: false }));
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      // Por defecto, solo permite cosas de tu propio dominio ('self')
+      defaultSrc: ["'self'"],
+
+      // Scripts: Permite 'self', Tailwind CDN, y 'unsafe-inline' (Ver Advertencia)
+      scriptSrc: [
+        "'self'",
+        "https://cdn.tailwindcss.com",
+        "'unsafe-inline'", // Necesario para tu script de 'login.ejs'
+      ],
+
+      // Estilos: Permite 'self', Google Fonts, y 'unsafe-inline' (Ver Advertencia)
+      styleSrc: [
+        "'self'",
+        "https://fonts.googleapis.com",
+        "'unsafe-inline'", // Necesario para tus <style> en 'login.ejs'
+      ],
+
+      // Fuentes: Permite 'self' y el dominio de Google Fonts
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+
+      // Imágenes: Permite 'self' y 'data:'
+      imgSrc: ["'self'", "data:"],
+
+      // No permite plugins como Flash
+      objectSrc: ["'none'"],
+
+      // Pide a los navegadores que usen HTTPS
+      upgradeInsecureRequests: [],
+    },
+  }),
+);
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
@@ -61,11 +95,24 @@ app.use(
     cookie: {
       secure: isProduction, // true = solo enviar sobre HTTPS (en producción)
       httpOnly: true, // Previene acceso desde JS en el cliente (es el default, pero es bueno ser explícito)
-      sameSite: "strict", // Mitiga ataques CSRF. La cookie solo se envía en el mismo sitio.
+      sameSite: "lax", // Mitiga ataques CSRF. La cookie solo se envía en el mismo sitio.
     },
   }),
 );
 
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  max: 100, // Límite de 100 peticiones por IP cada 15 min
+  message:
+    "Demasiadas solicitudes desde esta IP, por favor inténtalo de nuevo después de 15 minutos",
+  standardHeaders: true, // Envía headers estándar
+  legacyHeaders: false, // Deshabilita headers antiguos
+});
+
+app.use("/login", authLimiter);
+app.use("/registro", authLimiter);
+app.use("/forgot-password", authLimiter);
+app.use("/reset-password", authLimiter);
 // --- Rutas ---
 app.use("/", authRoutes);
 app.use("/", studentRoutes);

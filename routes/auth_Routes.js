@@ -14,17 +14,12 @@ router.get("/login", authController.showLoginPage);
 // Ruta: POST /login
 router.post("/login", authController.handleLogin);
 
-// --- Rutas de Registro ---
-
-// Muestra la página de registro
-// Ruta: GET /registro
-router.get("/registro", authController.showRegisterPage);
-
-// Procesa los datos del formulario de registro
-// Ruta: POST /registro
-router.post("/registro", authController.handleRegister);
+router.get("/contrasena_olvidada", authController.showForgotPasswordPage);
+router.post("/contrasena_olvidada", authController.handleForgotPassword);
+router.get("/contrasena_resetear/:token", authController.showResetPasswordPage);
+router.post("/contrasena_resetear/:token", authController.handleResetPassword);
 
 // --- RUTA DE LOGOUT (NUEVA) ---
-router.get("/logout", authController.handleLogout);
+router.post("/logout", authController.handleLogout); // ¡Que sea POST, no GET!
 
 module.exports = router;

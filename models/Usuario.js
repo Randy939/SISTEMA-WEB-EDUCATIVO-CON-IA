@@ -45,6 +45,15 @@ const UserSchema = new Schema({
     default: null, // null significa que no está bloqueado
   },
 
+  resetPasswordToken: {
+    type: String,
+    default: null,
+  },
+  resetPasswordExpires: {
+    type: Date,
+    default: null,
+  },
+
   fechaRegistro: {
     type: Date,
     default: Date.now, // Guarda la fecha de creación automáticamente
