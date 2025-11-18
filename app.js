@@ -1,14 +1,14 @@
 // app.js
-
+require("dotenv").config();
 // Importar librerías
 const express = require("express");
 const path = require("node:path");
 const connectDB = require("./config/database");
-const session = require("express-session"); // <-- NUEVO
-const MongoStore = require("connect-mongo"); // <-- NUEVO
-const { mongoURI } = require("./config/key");
+const session = require("express-session");
+const MongoStore = require("connect-mongo");
+const mongoURI = process.env.MONGO_URI;
 const helmet = require("helmet");
-const rateLimit = require("express-rate-limit"); // <-- NUEVO (para la sesión)
+const rateLimit = require("express-rate-limit");
 
 // Importar nuestras rutas
 const authRoutes = require("./routes/auth_Routes");
@@ -32,19 +32,11 @@ app.use(
       // Por defecto, solo permite cosas de tu propio dominio ('self')
       defaultSrc: ["'self'"],
 
-      // Scripts: Permite 'self', Tailwind CDN, y 'unsafe-inline' (Ver Advertencia)
-      scriptSrc: [
-        "'self'",
-        "https://cdn.tailwindcss.com",
-        "'unsafe-inline'", // Necesario para tu script de 'login.ejs'
-      ],
+      // Scripts: Permite 'self', Tailwind CDN, y 'unsafe-inline'
+      scriptSrc: ["'self'", "https://cdn.tailwindcss.com", "'unsafe-inline'"],
 
-      // Estilos: Permite 'self', Google Fonts, y 'unsafe-inline' (Ver Advertencia)
-      styleSrc: [
-        "'self'",
-        "https://fonts.googleapis.com",
-        "'unsafe-inline'", // Necesario para tus <style> en 'login.ejs'
-      ],
+      // Estilos: Permite 'self', Google Fonts, y 'unsafe-inline'
+      styleSrc: ["'self'", "https://fonts.googleapis.com", "'unsafe-inline'"],
 
       // Fuentes: Permite 'self' y el dominio de Google Fonts
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
@@ -60,6 +52,7 @@ app.use(
     },
   }),
 );
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
@@ -83,7 +76,7 @@ const isProduction = process.env.NODE_ENV === "production";
 
 app.use(
   session({
-    secret: "un-secreto-muy-secreto-para-firmar-la-cookie",
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({

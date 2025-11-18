@@ -16,3 +16,6 @@ __pycache__/
 # Entornos virtuales de Python
 .venv/
 venv/
+
+node_modules/
+.env

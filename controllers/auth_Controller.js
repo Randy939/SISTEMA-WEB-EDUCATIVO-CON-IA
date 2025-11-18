@@ -12,8 +12,8 @@ const nodemailer = require("nodemailer"); // Importa el modelo de Usuario
 const transporter = nodemailer.createTransport({
   service: "Gmail",
   auth: {
-    user: "sistemadelecturaia@gmail.com",
-    pass: "jruj gxdv ecsc zxvw",
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_PASS,
   },
 });
 
