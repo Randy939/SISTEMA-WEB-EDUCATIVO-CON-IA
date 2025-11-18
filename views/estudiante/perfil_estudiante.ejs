@@ -97,7 +97,6 @@
                       name="avatar"
                       id="input-avatar"
                       class="hidden"
-                      onchange="document.getElementById('form-foto').submit()"
                     />
                     <p class="text-sm text-[#4e7397] dark:text-slate-400 mt-3">
                       Haz clic en el lápiz para cambiar tu foto.
@@ -116,6 +115,23 @@
                       Eliminar foto
                     </button>
                   </form>
+                  <div class="w-full mt-4 text-center md:text-left">
+                    <p class="text-xl font-bold text-primary">
+                      Nivel <%= nivel %>
+                    </p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">
+                      Te faltan <%= xpParaSiguiente %> XP para el siguiente
+                      nivel
+                    </p>
+                    <div
+                      class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2.5 mt-2"
+                    >
+                      <div
+                        class="bg-primary h-2.5 rounded-full"
+                        style="width: <%= progresoXP %>%"
+                      ></div>
+                    </div>
+                  </div>
                 </div>
 
                 <div class="md:col-span-2">
@@ -127,14 +143,28 @@
                     <div>
                       <label
                         class="text-sm font-medium text-[#0e141b] dark:text-slate-300"
-                        for="nombre"
-                        >Nombre</label
+                        for="nombres"
+                        >Nombres</label
                       >
                       <input
                         class="mt-1 block w-full rounded-lg border-slate-300 bg-slate-200 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-400"
-                        id="nombre"
+                        id="nombres"
                         type="text"
-                        value="<%= user.nombre %>"
+                        value="<%= user.nombres %>"
+                        readonly
+                      />
+                    </div>
+                    <div>
+                      <label
+                        class="text-sm font-medium text-[#0e141b] dark:text-slate-300"
+                        for="apellidos"
+                        >Apellidos</label
+                      >
+                      <input
+                        class="mt-1 block w-full rounded-lg border-slate-300 bg-slate-200 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-400"
+                        id="apellidos"
+                        type="text"
+                        value="<%= user.apellidos %>"
                         readonly
                       />
                     </div>
@@ -156,13 +186,13 @@
                       <label
                         class="text-sm font-medium text-[#0e141b] dark:text-slate-300"
                         for="grado"
-                        >Grado/Nivel</label
+                        >Grado</label
                       >
                       <input
                         class="mt-1 block w-full rounded-lg border-slate-300 bg-slate-200 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-400"
                         id="grado"
                         type="text"
-                        value="6º Grado"
+                        value="<%= user.grado %>"
                         readonly
                       />
                     </div>
@@ -248,5 +278,25 @@
         </div>
       </main>
     </div>
+    <script>
+      // Espera a que la página cargue
+      document.addEventListener("DOMContentLoaded", function () {
+        // 1. Encuentra el input de la foto
+        const inputAvatar = document.getElementById("input-avatar");
+
+        // 2. Encuentra el formulario que debe enviarse
+        const formFoto = document.getElementById("form-foto");
+
+        // 3. Añade un "escuchador" de eventos
+        if (inputAvatar && formFoto) {
+          inputAvatar.addEventListener("change", function () {
+            // Cuando el input cambie (se seleccione un archivo),
+            // envía el formulario.
+            console.log("Archivo seleccionado. Enviando formulario de foto...");
+            formFoto.submit();
+          });
+        }
+      });
+    </script>
   </body>
 </html>

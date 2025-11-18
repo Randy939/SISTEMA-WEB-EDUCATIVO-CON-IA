@@ -223,19 +223,15 @@ exports.showProgreso = (req, res) => {
 };
 
 // --- MODIFICADA: Ahora pasamos los datos del usuario real ---
-exports.showPerfil = async (req, res) => {
-  try {
-    // Obtenemos los datos MÁS FRESCOS del usuario desde la BD
-    const user = await User.findById(req.session.user.id);
-
-    res.render("estudiante/perfil_estudiante", {
-      active: "perfil",
-      user: user, // Pasamos el objeto 'user' completo (con nombre, email, etc.)
-    });
-  } catch (error) {
-    console.error(error);
-    res.redirect("/dashboard");
-  }
+exports.showPerfil = (req, res) => {
+  // Pasamos el objeto 'user' completo de la sesión, que ahora lo tiene.
+  res.render("estudiante/perfil_estudiante", {
+    active: "perfil",
+    user: req.session.user,
+    nivel: req.session.user.nivel,
+    progresoXP: req.session.user.progresoXP,
+    xpParaSiguiente: req.session.user.xpParaSiguiente,
+  });
 };
 
 // --- ¡NUEVA FUNCIÓN! ---

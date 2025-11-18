@@ -11,7 +11,7 @@ const session = require("express-session"); // Para manejar sesiones de usuario.
 const MongoStore = require("connect-mongo"); // Para guardar sesiones en MongoDB.
 const helmet = require("helmet"); // Para seguridad básica (headers HTTP).
 const rateLimit = require("express-rate-limit"); // Para prevenir ataques de fuerza bruta/DoS.
-
+const authMiddleware = require("./middleware/authMiddleware");
 // --- 2. Importaciones de Rutas ---
 const authRoutes = require("./routes/auth_Routes");
 const studentRoutes = require("./routes/estudiante_Routes");
@@ -89,6 +89,9 @@ app.use(
     },
   }),
 );
+
+// --- Middleware para refrescar la sesión ---
+app.use(authMiddleware.refreshUserSession);
 
 // --- 8. Configuración de Rate Limiter (Seguridad) ---
 const authLimiter = rateLimit({

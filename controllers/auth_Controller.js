@@ -69,7 +69,7 @@ exports.handleForgotPassword = async (req, res) => {
       to: email,
       subject: "Enlace para resetear tu contraseña",
       html: `
-          <h2>¡Hola, ${user.nombre}!</h2>
+          <h2>¡Hola, ${user.nombres}!</h2>
           <p>Recibimos una solicitud para resetear tu contraseña. Haz clic en el siguiente enlace para continuar:</p>
           <a href="${resetUrl}" style="background: #4396ea; color: white; padding: 10px 15px; text-decoration: none; border-radius: 5px;">Resetear mi Contraseña</a>
           <p>Este enlace expirará en 1 hora.</p>
@@ -261,7 +261,7 @@ const createUserSession = (req, user, remember) => {
   // Guarda solo la información esencial y no sensible en la sesión.
   req.session.user = {
     id: user._id,
-    nombre: user.nombre,
+    nombre: user.nombres,
     role: user.role,
     avatarUrl: user.avatarUrl,
   };

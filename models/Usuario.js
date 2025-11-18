@@ -5,11 +5,24 @@ const Schema = mongoose.Schema;
 
 // Definimos la estructura (el "esquema") de nuestro usuario.
 const UserSchema = new Schema({
-  nombre: {
+  nombres: {
     type: String,
-    required: true, // Este campo es obligatorio.
-    trim: true, // Limpia espacios en blanco al inicio y al final.
+    trim: true,
     maxlength: 100,
+  },
+  apellidos: {
+    type: String,
+    trim: true,
+    maxlength: 100,
+  },
+  grado: {
+    type: String,
+    trim: true,
+    maxlength: 50,
+  },
+  experiencia: {
+    type: Number,
+    default: 0,
   },
   email: {
     type: String,
