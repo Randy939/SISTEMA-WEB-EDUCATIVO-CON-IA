@@ -2,9 +2,9 @@
 const path = require("node:path");
 const User = require("../models/Usuario");
 const Actividad = require("../models/Actividad");
-const Progreso = require("../models/Progreso"); // Importamos el modelo de Usuario
+const Progreso = require("../models/Progreso");
 const bcrypt = require("bcrypt");
-const fs = require("node:fs"); // Importamos bcrypt para hashear contraseñas
+const fs = require("node:fs");
 
 // --- (showDashboard se queda igual) ---
 exports.showDashboard = async (req, res) => {
@@ -44,15 +44,15 @@ exports.showDashboard = async (req, res) => {
 // 1. MUESTRA la página de gestión (formulario + lista)
 exports.showEstudiantes = async (req, res) => {
   try {
-    // Buscamos en la BD solo los usuarios con role 'estudiante'
+    // Busca en la BD solo los usuarios con role 'estudiante'
     const estudiantes = await User.find({ role: "estudiante" }).sort({
-      nombre: 1,
+      apellidos: 1, // Ordenamos por apellido
     });
 
     res.render("profesor/gestion_estudiantes", {
       active: "estudiantes",
       user: req.session.user,
-      estudiantes: estudiantes, // Pasamos la lista de estudiantes a la vista
+      estudiantes: estudiantes,
     });
   } catch (error) {
     console.error(error);
@@ -60,28 +60,31 @@ exports.showEstudiantes = async (req, res) => {
   }
 };
 
-// 2. MANEJA la creación de un nuevo estudiante
+// 2. MANEJA la creación de un nuevo estudiante (¡ACTUALIZADO!)
 exports.handleCrearEstudiante = async (req, res) => {
   try {
-    const { nombre, email, password } = req.body;
+    // Obtenemos los NUEVOS campos del formulario
+    const { nombres, apellidos, grado, email, password } = req.body;
 
     // Verificamos si el email ya existe
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       console.log("Email ya registrado");
-      return res.redirect("/profesor/estudiantes"); // Idealmente con un mensaje de error
+      return res.redirect("/profesor/estudiantes");
     }
 
     // Hasheamos la contraseña
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Creamos el nuevo usuario
+    // Creamos el nuevo usuario con los campos CORRECTOS
     const newUser = new User({
-      nombre,
+      nombres, // campo 'nombres'
+      apellidos, // campo 'apellidos'
+      grado, // campo 'grado'
       email,
       password: hashedPassword,
-      role: "estudiante", // Forzamos el rol
+      role: "estudiante",
     });
 
     await newUser.save();
@@ -104,7 +107,7 @@ exports.showEditarEstudiante = async (req, res) => {
     res.render("profesor/editar_estudiante", {
       active: "estudiantes",
       user: req.session.user,
-      estudiante: estudiante, // Pasamos el estudiante específico
+      estudiante: estudiante,
     });
   } catch (error) {
     console.error(error);
@@ -112,11 +115,19 @@ exports.showEditarEstudiante = async (req, res) => {
   }
 };
 
-// 4. MANEJA la actualización del estudiante
+// 4. MANEJA la actualización del estudiante (¡ACTUALIZADO!)
 exports.handleEditarEstudiante = async (req, res) => {
   try {
-    const { nombre, email } = req.body;
-    await User.findByIdAndUpdate(req.params.id, { nombre, email });
+    // Obtenemos los NUEVOS campos del formulario de edición
+    const { nombres, apellidos, grado, email } = req.body;
+
+    // Actualizamos al usuario en la BD
+    await User.findByIdAndUpdate(req.params.id, {
+      nombres,
+      apellidos,
+      grado,
+      email,
+    });
 
     console.log("Estudiante actualizado");
     res.redirect("/profesor/estudiantes");

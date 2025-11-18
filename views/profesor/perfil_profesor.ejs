@@ -98,7 +98,6 @@
                       name="avatar"
                       id="input-avatar"
                       class="hidden"
-                      onchange="document.getElementById('form-foto').submit()"
                     />
                     <p class="text-sm text-[#4e7397] dark:text-slate-400 mt-3">
                       Haz clic en el lápiz para cambiar tu foto.
@@ -135,7 +134,7 @@
                         id="nombre"
                         name="nombre"
                         type="text"
-                        value="<%= user.nombre %>"
+                        value="<%= user.nombres %>"
                         required
                       />
                     </div>
@@ -238,5 +237,25 @@
         </div>
       </main>
     </div>
+    <script>
+      // Espera a que la página cargue
+      document.addEventListener("DOMContentLoaded", function () {
+        // 1. Encuentra el input de la foto
+        const inputAvatar = document.getElementById("input-avatar");
+
+        // 2. Encuentra el formulario que debe enviarse
+        const formFoto = document.getElementById("form-foto");
+
+        // 3. Añade un "escuchador" de eventos
+        if (inputAvatar && formFoto) {
+          inputAvatar.addEventListener("change", function () {
+            // Cuando el input cambie (se seleccione un archivo),
+            // envía el formulario.
+            console.log("Archivo seleccionado. Enviando formulario de foto...");
+            formFoto.submit();
+          });
+        }
+      });
+    </script>
   </body>
 </html>
