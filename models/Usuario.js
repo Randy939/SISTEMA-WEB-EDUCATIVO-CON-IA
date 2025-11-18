@@ -1,66 +1,67 @@
-// models/User.js
+// Define el esquema de Mongoose para la colección de 'Usuarios'.
 
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-// Definimos la estructura (el "esquema") de nuestro usuario
+// Definimos la estructura (el "esquema") de nuestro usuario.
 const UserSchema = new Schema({
   nombre: {
     type: String,
-    required: true,
-    trim: true,
-    maxlength: 100, // <-- AÑADIDO: Límite de 100 caracteres
+    required: true, // Este campo es obligatorio.
+    trim: true, // Limpia espacios en blanco al inicio y al final.
+    maxlength: 100,
   },
   email: {
     type: String,
     required: true,
-    unique: true,
-    lowercase: true,
+    unique: true, // No puede haber dos usuarios con el mismo email.
+    lowercase: true, // Almacena el email siempre en minúsculas.
     trim: true,
-    maxlength: 254, // <-- AÑADIDO: Límite estándar para emails
+    maxlength: 254, // Límite estándar para emails.
   },
   password: {
     type: String,
-    required: true, // La contraseña es obligatoria
+    required: true, // La contraseña hasheada es obligatoria.
   },
   role: {
     type: String,
     required: true,
-    enum: ["estudiante", "profesor"], // Solo puede ser uno de estos dos valores
-    default: "estudiante", // Si no se especifica, será 'estudiante'
+    enum: ["estudiante", "profesor"], // Solo permite estos dos valores.
+    default: "estudiante", // Valor por defecto si no se especifica.
   },
   avatarUrl: {
     type: String,
-    default: "/images/default-avatar.png", // Usa la foto por defecto
+    default: "/images/default-avatar.png", // Imagen de perfil por defecto.
   },
 
-  // --- NUEVOS CAMPOS PARA BLOQUEO ---
+  // --- Campos para el bloqueo de cuenta (Seguridad) ---
   loginAttempts: {
     type: Number,
     required: true,
-    default: 0,
+    default: 0, // Inicia en 0 intentos fallidos.
   },
   lockUntil: {
     type: Date,
-    default: null, // null significa que no está bloqueado
+    default: null, // 'null' significa que la cuenta no está bloqueada.
   },
 
+  // --- Campos para el reseteo de contraseña (Seguridad) ---
   resetPasswordToken: {
     type: String,
-    default: null,
+    default: null, // Token para resetear la contraseña.
   },
   resetPasswordExpires: {
     type: Date,
-    default: null,
+    default: null, // Fecha de expiración del token.
   },
 
+  // --- Timestamp ---
   fechaRegistro: {
     type: Date,
-    default: Date.now, // Guarda la fecha de creación automáticamente
+    default: Date.now, // Guarda la fecha de creación automáticamente.
   },
 });
 
-// Creamos el modelo y lo exportamos
-// Mongoose tomará 'User', lo pondrá en minúscula y plural ('users')
-// y ese será el nombre de la "colección" (tabla) en la BD.
+// Creamos el modelo a partir del esquema y lo exportamos.
+// Mongoose llamará a la colección 'users' (plural y minúscula de 'User').
 module.exports = mongoose.model("User", UserSchema);
