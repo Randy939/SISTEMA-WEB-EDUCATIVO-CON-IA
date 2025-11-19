@@ -113,4 +113,10 @@ router.post(
   profesorController.handleDeletePhoto,
 );
 
+router.post(
+  "/profesor/actividades/generar-ia",
+  [isAuthenticated, isProfessor],
+  profesorController.generarContenidoIA,
+);
+
 module.exports = router;

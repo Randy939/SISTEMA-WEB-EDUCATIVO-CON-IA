@@ -35,8 +35,14 @@ app.use(
   helmet.contentSecurityPolicy({
     directives: {
       defaultSrc: ["'self'"], // Permite recursos del propio dominio.
+
       // (¡ADVERTENCIA! 'unsafe-inline' es necesario para el CDN de Tailwind)
       scriptSrc: ["'self'", "https://cdn.tailwindcss.com", "'unsafe-inline'"],
+
+      // --- AGREGA ESTA LÍNEA NUEVA AQUÍ ABAJO ---
+      scriptSrcAttr: ["'unsafe-inline'"],
+      // -----------------------------------------
+
       styleSrc: [
         "'self'",
         "https://fonts.googleapis.com",

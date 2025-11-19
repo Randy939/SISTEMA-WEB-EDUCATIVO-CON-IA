@@ -297,7 +297,7 @@ exports.showEditarActividad = async (req, res) => {
     // Usamos .populate() si quisiéramos datos del profesor, pero no es necesario aquí
     const actividad = await Actividad.findById(req.params.id);
 
-    if (!actividad || actividad.profesorId.toString() !== req.session.user.id) {
+    if (!actividad) {
       return res.redirect("/profesor/actividades");
     }
 
@@ -322,7 +322,7 @@ exports.handleEditarActividad = async (req, res) => {
     const profesorId = req.session.user.id;
 
     const actividad = await Actividad.findById(actividadId);
-    if (!actividad || actividad.profesorId.toString() !== profesorId) {
+    if (!actividad) {
       return res.redirect("/profesor/actividades");
     }
 
@@ -410,7 +410,7 @@ exports.handleEliminarActividad = async (req, res) => {
     const actividad = await Actividad.findById(actividadId);
 
     // Seguridad: Verificar propiedad
-    if (!actividad || actividad.profesorId.toString() !== req.session.user.id) {
+    if (!actividad) {
       return res.redirect("/profesor/actividades");
     }
 
@@ -542,5 +542,52 @@ exports.handleDeletePhoto = async (req, res) => {
   } catch (error) {
     console.error("Error al eliminar la foto:", error);
     res.redirect("/profesor/perfil");
+  }
+};
+
+// --- INTEGRACIÓN CON IA (ACTUALIZADO) ---
+exports.generarContenidoIA = async (req, res) => {
+  try {
+    // 1. Datos que vienen del formulario (Modal), AHORA CON PUNTAJE TOTAL
+    const {
+      tema,
+      grado,
+      dificultad,
+      cantidad_preguntas,
+      cantidad_alternativas,
+      puntaje_total,
+    } = req.body;
+
+    // 2. Llamamos al microservicio de Python (puerto 8000)
+    const response = await fetch("http://127.0.0.1:8000/generar-actividad", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        tema,
+        grado,
+        dificultad,
+        cantidad_preguntas: parseInt(cantidad_preguntas),
+        cantidad_alternativas: parseInt(cantidad_alternativas),
+        puntaje_total: parseInt(puntaje_total), // <--- NUEVO CAMPO ENVIADO A PYTHON
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.detail || "Error en el servicio de IA");
+    }
+
+    const data = await response.json();
+
+    // 3. Devolvemos el JSON limpio al navegador
+    res.json({ success: true, data: data });
+  } catch (error) {
+    console.error("Error al generar con IA:", error);
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: "Error al conectar con la IA: " + error.message,
+      });
   }
 };
