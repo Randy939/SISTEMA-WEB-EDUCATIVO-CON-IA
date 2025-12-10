@@ -22,12 +22,12 @@ connectDB();
 
 // --- 4. Inicialización de Express ---
 const app = express();
-const PORT = 3000; // Puerto en el que correrá el servidor.
+const PORT = process.env.PORT || 3000; // Puerto en el que correrá el servidor.
 
 // --- 5. Configuración del Motor de Vistas (EJS) ---
 app.set("view engine", "ejs"); // Usa EJS como motor de plantillas.
 app.set("views", path.join(__dirname, "views")); // Define la carpeta de vistas.
-
+app.set("trust proxy", 1);
 // --- 6. Middlewares Globales ---
 
 // Configura Content Security Policy (CSP) para prevenir ataques XSS.
@@ -129,5 +129,5 @@ app.get("/", (req, res) => {
 
 // --- 10. Iniciar Servidor ---
 app.listen(PORT, () => {
-  console.log(`¡Servidor escuchando en http://localhost:${PORT}`);
+  console.log(`¡Servidor escuchando en el puerto ${PORT}`);
 });
