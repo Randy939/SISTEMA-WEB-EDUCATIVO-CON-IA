@@ -5,7 +5,7 @@ const Actividad = require("../models/Actividad");
 const Progreso = require("../models/Progreso");
 const bcrypt = require("bcrypt");
 const fs = require("node:fs");
-const { generarActividadLocal } = require("./ia_generator");
+const { generarActividadLocal } = require("../utils/ia_generator");
 
 // --- (showDashboard se queda igual) ---
 exports.showDashboard = async (req, res) => {
@@ -549,7 +549,6 @@ exports.handleDeletePhoto = async (req, res) => {
 // --- INTEGRACIÓN CON IA (ACTUALIZADO) ---
 exports.generarContenidoIA = async (req, res) => {
   try {
-    // 1. Recibimos los datos del formulario (igual que antes)
     const {
       tema,
       grado,
@@ -559,28 +558,32 @@ exports.generarContenidoIA = async (req, res) => {
       puntaje_total,
     } = req.body;
 
-    console.log("Generando actividad con IA Local (Node)...");
+    // --- CÓDIGO VIEJO (ELIMINAR) ---
+    /*
+    const response = await fetch("http://127.0.0.1:8000/generar-actividad", {
+      ...
+    });
+    */
 
-    // 2. Preparamos el objeto de datos
-    const datosSolicitud = {
-      tema,
-      grado,
-      dificultad,
-      cantidad_preguntas: parseInt(cantidad_preguntas),
-      cantidad_alternativas: parseInt(cantidad_alternativas),
-      puntaje_total: parseInt(puntaje_total),
-    };
+    // --- CÓDIGO NUEVO (INTEGRACIÓN DIRECTA) ---
+    // Llamamos directamente a tu función en Node.js, sin HTTP fetch
+    const data = await generarActividadLocal({
+        tema,
+        grado,
+        dificultad,
+        cantidad_preguntas: parseInt(cantidad_preguntas),
+        cantidad_alternativas: parseInt(cantidad_alternativas),
+        puntaje_total: parseInt(puntaje_total)
+    });
 
-    // 3. ¡AQUÍ ESTÁ EL CAMBIO! Llamamos a la función local en vez de usar fetch
-    const data = await generarActividadLocal(datosSolicitud);
-
-    // 4. Devolvemos el JSON limpio al navegador
+    // Devolvemos la data directamente
     res.json({ success: true, data: data });
+
   } catch (error) {
     console.error("Error al generar con IA:", error);
     res.status(500).json({
       success: false,
-      message: "Error al generar actividad: " + error.message,
+      message: "Error en el servidor: " + error.message,
     });
   }
 };
