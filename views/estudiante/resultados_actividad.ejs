@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html class="light" lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Resultados: <%= actividad.titulo %></title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#4396ea",
+              "background-light": "#f6f7f8",
+              "background-dark": "#111921",
+            },
+            fontFamily: { display: ["Inter", "sans-serif"] },
+          },
+        },
+      };
+    </script>
+    <link rel="stylesheet" href="/css/main.css" />
+  </head>
+
+  <body
+    class="bg-background-light dark:bg-background-dark font-display text-[#0e141b] dark:text-slate-200 h-screen overflow-hidden"
+  >
+    <div class="flex h-full w-full">
+      <%- include('../partials/siderbar_estudiante', { active: active, user:
+      user }) %>
+
+      <main class="flex-1 p-6 lg:p-10 h-full overflow-y-auto">
+        <div class="max-w-4xl mx-auto">
+          <nav
+            class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mb-6"
+          >
+            <a
+              href="/actividades"
+              class="hover:text-primary transition-colors flex items-center gap-1"
+            >
+              <span class="material-symbols-outlined text-lg">arrow_back</span>
+              Volver a Actividades
+            </a>
+            <span class="text-slate-300">/</span>
+            <span class="font-medium text-slate-700 dark:text-slate-200"
+              >Resultados</span
+            >
+          </nav>
+
+          <% 
+             var ptObtenido = progreso.puntajeObtenido || 0;
+             var ptTotal = progreso.puntajeTotalPosible || 1; 
+             var pct = ptObtenido / ptTotal;
+             var final20 = Math.round(pct * 20);
+             var porcentajeEntero = Math.round(pct * 100);
+             var isApproved = pct >= 0.7; // Aprobado con 70% (14/20)
+
+             // Estilos dinámicos según nota
+             var mainColor = isApproved ? 'green' : 'orange';
+             var cardBorder = isApproved ? 'border-green-200 dark:border-green-900/30' : 'border-orange-200 dark:border-orange-900/30';
+             var cardBg = isApproved ? 'bg-green-50/50 dark:bg-green-900/10' : 'bg-orange-50/50 dark:bg-orange-900/10';
+             var textColor = isApproved ? 'text-green-700 dark:text-green-400' : 'text-orange-700 dark:text-orange-400';
+             var iconName = isApproved ? 'emoji_events' : 'sentiment_dissatisfied';
+             var statusMsg = isApproved ? '¡Excelente trabajo!' : 'Sigue practicando';
+          %>
+
+          <div
+            class="relative overflow-hidden rounded-2xl border <%= cardBorder %> <%= cardBg %> p-6 md:p-8 mb-8 shadow-sm"
+          >
+            <div
+              class="absolute -top-20 -right-20 size-64 rounded-full bg-<%= mainColor %>-500/10 blur-3xl pointer-events-none"
+            ></div>
+
+            <div
+              class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-8"
+            >
+              <div class="flex-1 space-y-3">
+                <div class="flex flex-wrap gap-2">
+                  <span
+                    class="px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-white/60 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400"
+                  >
+                    <%= actividad.tema %>
+                  </span>
+                  <span
+                    class="px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-white/60 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400"
+                  >
+                    <%= actividad.dificultad %>
+                  </span>
+                </div>
+                
+                <h1
+                  class="text-3xl md:text-4xl font-black text-slate-900 dark:text-white leading-tight"
+                >
+                  <%= actividad.titulo %>
+                </h1>
+                
+                <div class="flex items-center gap-2 <%= textColor %>">
+                  <span class="material-symbols-outlined text-xl"><%= iconName %></span>
+                  <p class="font-bold text-lg"><%= statusMsg %></p>
+                </div>
+              </div>
+
+              <div
+                class="flex items-center bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-1 pr-6"
+              >
+                <div class="p-5 text-center min-w-[120px] border-r border-slate-100 dark:border-slate-700">
+                  <span class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
+                    Nota Final
+                  </span>
+                  <span class="text-5xl font-black <%= textColor %> tracking-tight">
+                    <%= final20 %>
+                  </span>
+                </div>
+
+                <div class="pl-6 flex flex-col gap-3">
+                  <div class="flex flex-col">
+                    <span class="text-xs font-bold text-slate-400 uppercase">Puntos</span>
+                    <span class="font-bold text-slate-700 dark:text-slate-200 text-lg">
+                       <%= ptObtenido %> <span class="text-slate-400 text-sm">/ <%= ptTotal %></span>
+                    </span>
+                  </div>
+                  <div class="flex flex-col">
+                    <span class="text-xs font-bold text-slate-400 uppercase">Precisión</span>
+                    <span class="font-bold text-slate-700 dark:text-slate-200 text-lg">
+                      <%= porcentajeEntero %>%
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-6">
+            <% 
+              for(var i = 0; i < actividad.preguntas.length; i++) { 
+                var preg = actividad.preguntas[i];
+                var respUser = null;
+
+                if (progreso.respuestasDetalle) {
+                  for(var j = 0; j < progreso.respuestasDetalle.length; j++) {
+                    var r = progreso.respuestasDetalle[j];
+                    if (r.preguntaId.toString() === preg._id.toString()) {
+                      respUser = r;
+                      break;
+                    }
+                  }
+                }
+
+                var idSel = respUser ? respUser.alternativaSeleccionadaId.toString() : null;
+                var esCorrecta = respUser ? respUser.esCorrecta : false;
+                
+                var borderClass = esCorrecta ? 'border-green-200 dark:border-green-900/30' : 'border-red-200 dark:border-red-900/30';
+                var textClass = esCorrecta ? 'text-green-500' : 'text-red-500';
+                var statusText = esCorrecta ? 'Correcta' : 'Incorrecta';
+                var badgeClass = esCorrecta ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500';
+                var scoreText = esCorrecta ? '+' + preg.puntaje : '0';
+            %>
+
+            <article
+              class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border <%= borderClass %> overflow-hidden"
+            >
+              <div class="p-6">
+                <div class="flex justify-between items-start gap-4 mb-4">
+                  <h3 class="font-bold text-lg text-slate-900 dark:text-white">
+                    <span
+                      class="mr-2 text-base font-normal <%= textClass %>"
+                    >
+                      <%= statusText %>
+                    </span>
+                    <%= preg.preguntaTexto %>
+                  </h3>
+                  <span
+                    class="shrink-0 px-2.5 py-1 text-xs font-bold rounded-md <%= badgeClass %>"
+                  >
+                    <%= scoreText %> / <%= preg.puntaje %> pts
+                  </span>
+                </div>
+
+                <div class="space-y-3 pl-2 md:pl-6">
+                  <% 
+                    for(var k = 0; k < preg.alternativas.length; k++) { 
+                      var alt = preg.alternativas[k];
+                      var isSel = (idSel === alt._id.toString());
+                      var isCorr = alt.esCorrecta;
+                      
+                      var itemBorder = "border-transparent";
+                      var itemText = "text-slate-700 dark:text-slate-300";
+                      var iconNameAlt = ""; // Cambié nombre variable para no chocar
+                      var iconColor = "";
+
+                      if (isCorr) {
+                          itemBorder = "border-green-500 bg-green-50 dark:bg-green-900/20";
+                          itemText = "text-green-700 dark:text-green-400 font-bold";
+                          iconNameAlt = "check_circle";
+                          iconColor = "text-green-500";
+                      } else if (isSel && !isCorr) {
+                          itemBorder = "border-red-500 bg-red-50 dark:bg-red-900/20";
+                          itemText = "text-red-700 dark:text-red-400 font-bold";
+                          iconNameAlt = "cancel";
+                          iconColor = "text-red-500";
+                      } else if (isSel) {
+                          itemBorder = "border-green-500";
+                      }
+                  %>
+
+                  <div
+                    class="relative flex items-center p-3 rounded-lg border-2 <%= itemBorder %> transition-all"
+                  >
+                    <div class="flex items-center gap-4 z-10 w-full">
+                      <div
+                        class="size-6 flex items-center justify-center shrink-0"
+                      >
+                        <% if (iconNameAlt) { %>
+                        <span
+                          class="material-symbols-outlined text-xl <%= iconColor %>"
+                        >
+                          <%= iconNameAlt %>
+                        </span>
+                        <% } else { %>
+                        <div
+                          class="size-4 rounded-full border-2 border-slate-300 dark:border-slate-600"
+                        ></div>
+                        <% } %>
+                      </div>
+
+                      <span class="<%= itemText %>"> <%= alt.texto %> </span>
+
+                      <% if (isSel) { %>
+                      <span
+                        class="ml-auto text-xs font-bold uppercase tracking-wider text-slate-400"
+                      >
+                        Tu respuesta
+                      </span>
+                      <% } %>
+                    </div>
+                  </div>
+                  <% } %>
+                </div>
+              </div>
+            </article>
+            <% } %>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

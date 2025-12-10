@@ -173,33 +173,42 @@ exports.handleEnviarActividad = async (req, res) => {
     // 2. Calculamos el puntaje
     let puntajeObtenido = 0;
     let puntajeTotalPosible = 0;
+    const respuestasDetalle = []; // Array para guardar el detalle
 
     actividad.preguntas.forEach((pregunta) => {
-      puntajeTotalPosible += pregunta.puntaje; // Sumamos el puntaje posible
+      puntajeTotalPosible += pregunta.puntaje;
       const preguntaId = pregunta._id.toString();
-      const respuestaEstudiante = respuestas[preguntaId]; // ID de la alternativa que marcó
+      const respuestaEstudianteId = respuestas[preguntaId];
+      let esCorrecta = false;
 
-      if (respuestaEstudiante) {
-        // Buscamos la alternativa correcta dentro de la pregunta
+      if (respuestaEstudianteId) {
         const alternativaCorrecta = pregunta.alternativas.find(
           (alt) => alt.esCorrecta,
         );
+
         if (
           alternativaCorrecta &&
-          alternativaCorrecta._id.toString() === respuestaEstudiante
+          alternativaCorrecta._id.toString() === respuestaEstudianteId
         ) {
-          // ¡Respuesta correcta! Sumamos el puntaje
           puntajeObtenido += pregunta.puntaje;
+          esCorrecta = true;
         }
+
+        // Guardamos el detalle
+        respuestasDetalle.push({
+          preguntaId: pregunta._id,
+          alternativaSeleccionadaId: respuestaEstudianteId, // Guardamos ID de la respuesta
+          esCorrecta: esCorrecta,
+        });
       }
     });
 
-    // 3. Creamos y guardamos el registro de progreso
     const nuevoProgreso = new Progreso({
       estudianteId,
       actividadId,
       puntajeObtenido,
       puntajeTotalPosible,
+      respuestasDetalle: respuestasDetalle, // <-- GUARDAMOS EL DETALLE
     });
     await nuevoProgreso.save();
 
@@ -216,10 +225,6 @@ exports.handleEnviarActividad = async (req, res) => {
     console.error("Error al enviar actividad:", error);
     res.redirect("/actividades");
   }
-};
-
-exports.showProgreso = (req, res) => {
-  res.send("Página de Progreso - EN CONSTRUCCIÓN");
 };
 
 // --- MODIFICADA: Ahora pasamos los datos del usuario real ---
@@ -338,5 +343,55 @@ exports.handleDeletePhoto = async (req, res) => {
   } catch (error) {
     console.error("Error al eliminar la foto:", error);
     res.redirect("/perfil");
+  }
+};
+
+// ... (importaciones existentes)
+
+// 4. MUESTRA los resultados de una actividad completada
+exports.showResultadosActividad = async (req, res) => {
+  try {
+    const actividadId = req.params.id;
+    const estudianteId = req.session.user.id;
+
+    // 1. Buscamos la actividad y el progreso
+    const [actividad, progreso] = await Promise.all([
+      Actividad.findById(actividadId).lean(),
+      Progreso.findOne({ estudianteId, actividadId }).lean(),
+    ]);
+
+    // Si no existe la actividad o el estudiante no la ha completado, redirigir
+    if (!actividad || !progreso) {
+      console.log("No se encontraron resultados para esta actividad.");
+      return res.redirect("/actividades");
+    }
+
+    // 2. Preparamos los datos para la vista
+    // Necesitamos saber qué marcó el estudiante.
+    // Como simplificamos el modelo Progreso antes solo guardando el puntaje total,
+    // IDEALMENTE deberíamos haber guardado las respuestas detalladas en el modelo Progreso.
+
+    // *NOTA IMPORTANTE:* // Para que esto funcione PERFECTO, tu modelo 'Progreso.js' debería guardar
+    // un array/mapa de 'respuestasDadas'. Si no lo tiene, solo podremos mostrar
+    // el puntaje final.
+
+    // *SOLUCIÓN TEMPORAL SIN CAMBIAR BASE DE DATOS:*
+    // Por ahora, solo mostraremos la actividad en modo "revisión" mostrando cuáles eran las correctas,
+    // pero NO podremos mostrar cuál marcó el estudiante si esa info no se guardó.
+    //
+    // SI QUIERES VER LO QUE MARCÓ, necesitamos actualizar el modelo Progreso primero.
+    // ¿Quieres que actualice el modelo Progreso para guardar respuestas detalladas?
+    // Asumiré que SÍ para darte la solución completa.
+
+    res.render("estudiante/resultados_actividad", {
+      active: "actividades",
+      user: req.session.user,
+      actividad: actividad,
+      progreso: progreso,
+      // Si actualizamos el modelo, aquí pasaríamos las respuestas guardadas
+    });
+  } catch (error) {
+    console.error("Error al mostrar resultados:", error);
+    res.redirect("/actividades");
   }
 };

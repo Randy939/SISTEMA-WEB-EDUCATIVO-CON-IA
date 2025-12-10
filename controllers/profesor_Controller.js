@@ -5,6 +5,7 @@ const Actividad = require("../models/Actividad");
 const Progreso = require("../models/Progreso");
 const bcrypt = require("bcrypt");
 const fs = require("node:fs");
+const { generarActividadLocal } = require("./ia_generator");
 
 // --- (showDashboard se queda igual) ---
 exports.showDashboard = async (req, res) => {
@@ -548,7 +549,7 @@ exports.handleDeletePhoto = async (req, res) => {
 // --- INTEGRACIÓN CON IA (ACTUALIZADO) ---
 exports.generarContenidoIA = async (req, res) => {
   try {
-    // 1. Datos que vienen del formulario (Modal), AHORA CON PUNTAJE TOTAL
+    // 1. Recibimos los datos del formulario (igual que antes)
     const {
       tema,
       grado,
@@ -558,36 +559,79 @@ exports.generarContenidoIA = async (req, res) => {
       puntaje_total,
     } = req.body;
 
-    // 2. Llamamos al microservicio de Python (puerto 8000)
-    const response = await fetch("http://127.0.0.1:8000/generar-actividad", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        tema,
-        grado,
-        dificultad,
-        cantidad_preguntas: parseInt(cantidad_preguntas),
-        cantidad_alternativas: parseInt(cantidad_alternativas),
-        puntaje_total: parseInt(puntaje_total), // <--- NUEVO CAMPO ENVIADO A PYTHON
-      }),
-    });
+    console.log("Generando actividad con IA Local (Node)...");
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.detail || "Error en el servicio de IA");
-    }
+    // 2. Preparamos el objeto de datos
+    const datosSolicitud = {
+      tema,
+      grado,
+      dificultad,
+      cantidad_preguntas: parseInt(cantidad_preguntas),
+      cantidad_alternativas: parseInt(cantidad_alternativas),
+      puntaje_total: parseInt(puntaje_total),
+    };
 
-    const data = await response.json();
+    // 3. ¡AQUÍ ESTÁ EL CAMBIO! Llamamos a la función local en vez de usar fetch
+    const data = await generarActividadLocal(datosSolicitud);
 
-    // 3. Devolvemos el JSON limpio al navegador
+    // 4. Devolvemos el JSON limpio al navegador
     res.json({ success: true, data: data });
   } catch (error) {
     console.error("Error al generar con IA:", error);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Error al conectar con la IA: " + error.message,
-      });
+    res.status(500).json({
+      success: false,
+      message: "Error al generar actividad: " + error.message,
+    });
+  }
+};
+// ... importaciones existentes ...
+
+exports.showReportes = async (req, res) => {
+  try {
+    const profesorId = req.session.user.id;
+
+    // 1. Obtener todos los estudiantes
+    const estudiantes = await User.find({ role: "estudiante" })
+      .select("nombres apellidos email")
+      .sort({ apellidos: 1 })
+      .lean();
+
+    // 2. Obtener todas las actividades de este profesor
+    const actividades = await Actividad.find({ profesorId: profesorId })
+      .select("titulo tema")
+      .sort({ createdAt: -1 })
+      .lean();
+
+    // 3. Obtener todo el progreso registrado para estas actividades
+    // (Optimizamos buscando solo lo necesario)
+    const actividadesIds = actividades.map((a) => a._id);
+    const progresos = await Progreso.find({
+      actividadId: { $in: actividadesIds },
+    }).lean();
+
+    // 4. Crear un Mapa para acceso rápido: reporte[estudianteId][actividadId] = { nota, total }
+    const mapaProgreso = {};
+
+    progresos.forEach((p) => {
+      const key = `${p.estudianteId.toString()}_${p.actividadId.toString()}`;
+      mapaProgreso[key] = {
+        obtenido: p.puntajeObtenido,
+        posible: p.puntajeTotalPosible,
+        porcentaje: Math.round(
+          (p.puntajeObtenido / p.puntajeTotalPosible) * 100,
+        ),
+      };
+    });
+
+    res.render("profesor/reportes_profesor", {
+      active: "reportes",
+      user: req.session.user,
+      estudiantes: estudiantes,
+      actividades: actividades,
+      mapaProgreso: mapaProgreso,
+    });
+  } catch (error) {
+    console.error("Error al mostrar reportes:", error);
+    res.redirect("/profesor/dashboard");
   }
 };

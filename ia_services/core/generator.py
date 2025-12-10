@@ -11,7 +11,7 @@ load_dotenv()
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 # Usamos el modelo validado
-model = genai.GenerativeModel('gemini-2.0-flash')
+model = genai.GenerativeModel('gemini-flash-latest')
 
 def limpiar_respuesta_json(texto):
     """Busca el primer '{' y el último '}' para extraer solo el JSON."""

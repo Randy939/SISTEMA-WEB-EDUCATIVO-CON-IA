@@ -3,12 +3,12 @@
   <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Realizar Actividad: <%= actividad.titulo %></title>
+    <title>Lectura: <%= actividad.titulo %></title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com" rel="preconnect" />
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
       rel="stylesheet"
     />
     <link
@@ -32,7 +32,6 @@
               DEFAULT: "0.25rem",
               lg: "0.5rem",
               xl: "0.75rem",
-
               full: "9999px",
             },
           },
@@ -49,109 +48,177 @@
       <%- include('../partials/siderbar_estudiante', { active: active, user:
       user }) %>
 
-      <main class="flex-1 p-8 h-full overflow-y-auto">
-        <div class="max-w-3xl mx-auto">
-          <header class="mb-8">
+      <main class="flex-1 p-6 lg:p-10 h-full overflow-y-auto">
+        <div class="max-w-4xl mx-auto">
+          <nav
+            class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mb-6"
+          >
             <a
               href="/actividades"
-              class="flex items-center gap-1 text-sm text-primary hover:underline mb-2"
+              class="hover:text-primary transition-colors flex items-center gap-1"
             >
-              <span class="material-symbols-outlined">arrow_back</span>
-              Volver a Mis Actividades
+              <span class="material-symbols-outlined text-lg">arrow_back</span>
+              Mis Actividades
             </a>
-            <p
-              class="text-slate-900 dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]"
+            <span class="text-slate-300">/</span>
+            <span
+              class="font-medium text-slate-700 dark:text-slate-200 truncate max-w-[200px]"
+              ><%= actividad.titulo %></span
+            >
+          </nav>
+
+          <header class="mb-8">
+            <h1
+              class="text-slate-900 dark:text-white text-3xl md:text-4xl font-black leading-tight tracking-tight mb-4"
             >
               <%= actividad.titulo %>
-            </p>
-            <div class="flex items-center gap-2 mt-2">
-              <span class="text-xs font-medium text-blue-800 bg-blue-100..."
-                ><%= actividad.tema %></span
+            </h1>
+            <div class="flex flex-wrap items-center gap-3">
+              <span
+                class="px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 border border-blue-200 dark:border-blue-800"
               >
-              <span class="text-xs font-medium text-amber-800 bg-amber-100..."
-                ><%= actividad.dificultad %></span
+                <%= actividad.tema %>
+              </span>
+              <span
+                class="px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 border border-amber-200 dark:border-amber-800 uppercase tracking-wide"
               >
+                <%= actividad.dificultad %>
+              </span>
             </div>
           </header>
 
           <form action="/actividad/<%= actividad._id %>/enviar" method="POST">
-            <div
-              class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 mb-8"
-            >
-              <h2
-                class="text-2xl font-bold text-slate-800 dark:text-slate-200 mb-4"
+            <div class="flex flex-col gap-8">
+              <section
+                class="bg-white dark:bg-slate-900 rounded-2xl shadow-[0_4px_12px_rgba(0,0,0,0.05)] dark:shadow-[0_4px_12px_rgba(0,0,0,0.2)] overflow-hidden"
               >
-                Lectura
-              </h2>
-              <div
-                class="prose dark:prose-invert max-w-none text-slate-700 dark:text-slate-300"
-              >
-                <%- actividad.descripcion.replace(/\n/g, '<br />') %>
-              </div>
-            </div>
-
-            <div
-              class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6"
-            >
-              <h2
-                class="text-2xl font-bold text-slate-800 dark:text-slate-200 mb-6"
-              >
-                Preguntas de Comprensión
-              </h2>
-              <div class="space-y-8">
-                <% if (!actividad.preguntas || actividad.preguntas.length === 0)
-                { %>
-                <p class="text-slate-500 text-center">
-                  Esta actividad no tiene preguntas.
-                </p>
-                <% } %>
-
-                <% actividad.preguntas.forEach((pregunta, index) => { %>
-                <div class="border-t dark:border-slate-700 pt-6">
-                  <p
-                    class="font-semibold text-slate-800 dark:text-slate-200 mb-3"
+                <div
+                  class="border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 px-6 py-4 flex items-center gap-2"
+                >
+                  <span class="material-symbols-outlined text-primary"
+                    >menu_book</span
                   >
-                    Pregunta
-                    <%= index + 1 %>:
-                    <%= pregunta.preguntaTexto %>
-                    (<%= pregunta.puntaje %>
-                    pts)
-                  </p>
-                  <div class="space-y-3 pl-4">
-                    <% pregunta.alternativas.forEach((alt, altIndex) => { %>
-                    <label
-                      for="resp_<%= pregunta._id %>_<%= alt._id %>"
-                      class="flex items-center gap-3 cursor-pointer p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 has-[:checked]:bg-primary/10 has-[:checked]:border-primary dark:has-[:checked]:border-primary"
-                    >
-                      <input
-                        type="radio"
-                        id="resp_<%= pregunta._id %>_<%= alt._id %>"
-                        name="respuestas[<%= pregunta._id %>]"
-                        value="<%= alt._id %>"
-                        class="form-radio text-primary focus:ring-primary h-5 w-5"
-                        required
-                      />
-                      <span class="text-slate-700 dark:text-slate-300"
-                        ><%= alt.texto %></span
-                      >
-                    </label>
-                    <% }) %>
+                  <h2
+                    class="text-lg font-bold text-slate-800 dark:text-slate-200"
+                  >
+                    Lectura
+                  </h2>
+                </div>
+                <div class="p-6 md:p-8">
+                  <div
+                    class="prose dark:prose-invert max-w-none text-slate-700 dark:text-slate-300 leading-relaxed text-lg"
+                  >
+                    <%- actividad.descripcion.replace(/\n/g, '<br />') %>
                   </div>
                 </div>
-                <% }) %>
-              </div>
-            </div>
+              </section>
 
-            <% if (actividad.preguntas && actividad.preguntas.length > 0) { %>
-            <div class="mt-8 flex justify-end">
-              <button
-                type="submit"
-                class="flex min-w-[120px] cursor-pointer items-center justify-center rounded-lg h-10 px-6 bg-primary text-white text-sm font-medium"
-              >
-                <span class="truncate">Terminar y Enviar Respuestas</span>
-              </button>
+              <section>
+                <div class="flex items-center gap-2 mb-6">
+                  <span
+                    class="flex items-center justify-center size-8 rounded-full bg-primary text-white font-bold text-sm"
+                    >?</span
+                  >
+                  <h2
+                    class="text-2xl font-bold text-slate-800 dark:text-slate-200"
+                  >
+                    Preguntas de Comprensión
+                  </h2>
+                </div>
+
+                <div class="space-y-6">
+                  <% if (!actividad.preguntas || actividad.preguntas.length ===
+                  0) { %>
+                  <div
+                    class="bg-slate-50 dark:bg-slate-900 rounded-xl p-8 text-center border border-dashed border-slate-300 dark:border-slate-700"
+                  >
+                    <p class="text-slate-500">
+                      Esta actividad no tiene preguntas asignadas.
+                    </p>
+                  </div>
+                  <% } %>
+
+                  <% actividad.preguntas.forEach((pregunta, index) => { %>
+                  <article
+                    class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden"
+                  >
+                    <div class="p-6">
+                      <div class="flex justify-between items-start gap-4 mb-4">
+                        <h3
+                          class="font-bold text-lg text-slate-900 dark:text-white"
+                        >
+                          <span
+                            class="text-slate-400 mr-2 text-base font-normal"
+                            >#<%= index + 1 %></span
+                          >
+                          <%= pregunta.preguntaTexto %>
+                        </h3>
+                        <span
+                          class="shrink-0 px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs font-bold rounded-md"
+                        >
+                          <%= pregunta.puntaje %> pts
+                        </span>
+                      </div>
+
+                      <div class="space-y-3 pl-2 md:pl-6">
+                        <% pregunta.alternativas.forEach((alt, altIndex) => { %>
+                        <label
+                          class="group relative flex items-center p-3 rounded-lg border-2 border-transparent hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-all"
+                        >
+                          <input
+                            type="radio"
+                            id="resp_<%= pregunta._id %>_<%= alt._id %>"
+                            name="respuestas[<%= pregunta._id %>]"
+                            value="<%= alt._id %>"
+                            class="peer sr-only"
+                            required
+                          />
+                          <div
+                            class="absolute inset-0 border-2 border-transparent peer-checked:border-primary rounded-lg pointer-events-none transition-colors"
+                          ></div>
+
+                          <div class="flex items-center gap-4 z-10 w-full">
+                            <div
+                              class="size-5 rounded-full border-2 border-slate-300 dark:border-slate-600 peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center transition-colors"
+                            >
+                              <div
+                                class="size-2 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity"
+                              ></div>
+                            </div>
+                            <span
+                              class="text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white transition-colors"
+                            >
+                              <%= alt.texto %>
+                            </span>
+                          </div>
+                        </label>
+                        <% }) %>
+                      </div>
+                    </div>
+                  </article>
+                  <% }) %>
+                </div>
+              </section>
+
+              <% if (actividad.preguntas && actividad.preguntas.length > 0) { %>
+              <div class="sticky bottom-4 z-20 flex justify-end">
+                <div
+                  class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-4 rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 flex gap-4 items-center"
+                >
+                  <span class="text-sm text-slate-500 hidden sm:inline"
+                    >Asegúrate de responder todo</span
+                  >
+                  <button
+                    type="submit"
+                    class="flex items-center justify-center gap-2 rounded-xl h-12 px-8 bg-primary hover:bg-primary/90 text-white text-base font-bold shadow-md shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                  >
+                    <span>Terminar Lectura</span>
+                    <span class="material-symbols-outlined text-lg">send</span>
+                  </button>
+                </div>
+              </div>
+              <% } %>
             </div>
-            <% } %>
           </form>
         </div>
       </main>

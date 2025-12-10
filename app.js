@@ -34,24 +34,26 @@ app.set("views", path.join(__dirname, "views")); // Define la carpeta de vistas.
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
-      defaultSrc: ["'self'"], // Permite recursos del propio dominio.
+      defaultSrc: ["'self'"],
 
-      // (¡ADVERTENCIA! 'unsafe-inline' es necesario para el CDN de Tailwind)
-      scriptSrc: ["'self'", "https://cdn.tailwindcss.com", "'unsafe-inline'"],
-
-      // --- AGREGA ESTA LÍNEA NUEVA AQUÍ ABAJO ---
-      scriptSrcAttr: ["'unsafe-inline'"],
-      // -----------------------------------------
-
-      styleSrc: [
+      scriptSrc: [
         "'self'",
-        "https://fonts.googleapis.com",
-        "'unsafe-inline'", // (Necesario para estilos inline)
+        "https://cdn.tailwindcss.com",
+        "https://cdnjs.cloudflare.com",
+        "'unsafe-inline'",
       ],
+
+      scriptSrcAttr: ["'unsafe-inline'"],
+
+      // --- AGREGA ESTA NUEVA SECCIÓN ---
+      connectSrc: ["'self'", "https://cdnjs.cloudflare.com"],
+      // --------------------------------
+
+      styleSrc: ["'self'", "https://fonts.googleapis.com", "'unsafe-inline'"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
       imgSrc: ["'self'", "data:"],
-      objectSrc: ["'none'"], // Bloquea plugins (Flash, etc.).
-      upgradeInsecureRequests: [], // Pide HTTPS.
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: [],
     },
   }),
 );

@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com" rel="preconnect" />
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
       rel="stylesheet"
     />
     <link
@@ -39,6 +39,22 @@
       };
     </script>
     <link rel="stylesheet" href="/css/main.css" />
+    <style>
+      .tab-content {
+        transition: opacity 0.3s ease-in-out;
+      }
+      .tab-link.active {
+        color: #4396ea;
+        border-bottom-color: #4396ea;
+      }
+      .tab-link:not(.active) {
+        color: #64748b;
+        border-bottom-color: transparent;
+      }
+      .tab-link:not(.active):hover {
+        color: #334155;
+      }
+    </style>
     <script src="/js/tabs_actividades.js" defer></script>
   </head>
 
@@ -49,184 +65,239 @@
       <%- include('../partials/siderbar_estudiante', { active: active, user:
       user }) %>
 
-      <div class="flex flex-1 flex-col">
-        <div class="layout-container flex h-full grow flex-col">
-          <div
-            class="flex flex-1 justify-center py-5 sm:px-4 md:px-10 lg:px-20 xl:px-40"
-          >
-            <div
-              class="layout-content-container flex flex-col w-full max-w-[960px] flex-1"
+      <main class="flex-1 p-6 lg:p-10 h-full overflow-y-auto">
+        <div class="w-full max-w-6xl mx-auto">
+          <div class="flex flex-col gap-2 mb-8">
+            <h1
+              class="text-[#0e141b] dark:text-slate-50 text-4xl font-black leading-tight tracking-[-0.033em]"
             >
-              <main class="flex-1 h-full overflow-y-auto">
-                <div class="flex flex-wrap justify-between gap-3 p-4">
-                  <div class="flex min-w-72 flex-col gap-3">
-                    <p
-                      class="text-slate-900 dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]"
-                    >
-                      Mis Actividades
-                    </p>
-                    <p
-                      class="text-slate-500 dark:text-slate-400 text-base font-normal leading-normal mt-2"
-                    >
-                      Aquí puedes ver todas tus lecturas asignadas.
-                    </p>
-                  </div>
-                </div>
+              Mis Actividades
+            </h1>
+            <p
+              class="text-[#4e7397] dark:text-slate-400 text-base font-normal leading-normal"
+            >
+              Explora tus lecturas asignadas y revisa tu historial de
+              aprendizaje.
+            </p>
+          </div>
 
-                <div class="pb-3 mt-4">
+          <div
+            class="bg-white dark:bg-slate-900 rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.05)] dark:shadow-[0_4px_12px_rgba(0,0,0,0.2)] min-h-[500px] flex flex-col"
+          >
+            <div class="border-b border-slate-200 dark:border-slate-800 px-6">
+              <div class="flex gap-8">
+                <a
+                  id="tab-pendientes"
+                  href="#pendientes"
+                  class="tab-link flex items-center gap-2 py-4 border-b-[3px] font-semibold text-sm transition-colors duration-200 active"
+                >
+                  <span class="material-symbols-outlined text-[20px]"
+                    >pending_actions</span
+                  >
+                  <span>Pendientes</span>
+                  <span
+                    class="ml-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded-full text-xs font-bold"
+                  >
+                    <%= pendientes.length %>
+                  </span>
+                </a>
+
+                <a
+                  id="tab-completadas"
+                  href="#completadas"
+                  class="tab-link flex items-center gap-2 py-4 border-b-[3px] font-semibold text-sm transition-colors duration-200"
+                >
+                  <span class="material-symbols-outlined text-[20px]"
+                    >task_alt</span
+                  >
+                  <span>Completadas</span>
+                  <span
+                    class="ml-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded-full text-xs font-bold"
+                  >
+                    <%= completadas.length %>
+                  </span>
+                </a>
+              </div>
+            </div>
+
+            <div id="section-pendientes" class="tab-content p-6">
+              <% if (pendientes.length === 0) { %>
+              <div
+                class="flex flex-col items-center justify-center py-20 text-center"
+              >
+                <div
+                  class="bg-slate-50 dark:bg-slate-800/50 p-6 rounded-full mb-4"
+                >
+                  <span
+                    class="material-symbols-outlined text-4xl text-slate-400"
+                    >check_circle</span
+                  >
+                </div>
+                <h3
+                  class="text-lg font-bold text-slate-900 dark:text-white mb-1"
+                >
+                  ¡Todo al día!
+                </h3>
+                <p class="text-slate-500 dark:text-slate-400 max-w-xs">
+                  No tienes actividades pendientes por realizar en este momento.
+                </p>
+              </div>
+              <% } else { %>
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <% pendientes.forEach(function(actividad) { %>
+                <article
+                  class="group flex flex-col bg-slate-50 dark:bg-slate-800/50 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700/50 hover:shadow-md transition-all duration-300"
+                >
+                  <div class="relative h-48 overflow-hidden">
+                    <div
+                      class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+                      style="
+                        background-image: url(&quot;<%= actividad.imagenUrl %>&quot;);
+                      "
+                    ></div>
+                    <div
+                      class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"
+                    ></div>
+                    <div class="absolute bottom-3 left-3 flex gap-2">
+                      <span
+                        class="px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-white/90 text-slate-800 backdrop-blur-sm"
+                      >
+                        <%= actividad.dificultad %>
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="flex flex-col flex-1 p-5">
+                    <div class="mb-3">
+                      <span
+                        class="text-xs font-semibold text-primary uppercase tracking-wide mb-1 block"
+                      >
+                        <%= actividad.tema %>
+                      </span>
+                      <h3
+                        class="text-lg font-bold text-slate-900 dark:text-white leading-tight line-clamp-2"
+                        title="<%= actividad.titulo %>"
+                      >
+                        <%= actividad.titulo %>
+                      </h3>
+                    </div>
+
+                    <div class="mt-auto pt-4">
+                      <a
+                        href="/actividad/<%= actividad._id %>"
+                        class="flex items-center justify-center w-full py-2.5 px-4 bg-primary hover:bg-primary/90 text-white font-medium rounded-lg transition-colors shadow-sm group-hover:shadow-md"
+                      >
+                        Comenzar Actividad
+                        <span class="material-symbols-outlined text-lg ml-2"
+                          >arrow_forward</span
+                        >
+                      </a>
+                    </div>
+                  </div>
+                </article>
+                <% }); %>
+              </div>
+              <% } %>
+            </div>
+
+            <div id="section-completadas" class="tab-content p-6 hidden">
+              <% if (completadas.length === 0) { %>
+              <div
+                class="flex flex-col items-center justify-center py-20 text-center"
+              >
+                <div
+                  class="bg-slate-50 dark:bg-slate-800/50 p-6 rounded-full mb-4"
+                >
+                  <span
+                    class="material-symbols-outlined text-4xl text-slate-400"
+                    >history_edu</span
+                  >
+                </div>
+                <h3
+                  class="text-lg font-bold text-slate-900 dark:text-white mb-1"
+                >
+                  Sin historial
+                </h3>
+                <p class="text-slate-500 dark:text-slate-400 max-w-xs">
+                  Aún no has completado ninguna actividad.
+                </p>
+              </div>
+              <% } else { %>
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <% completadas.forEach(function(actividad) { %> <% var
+                porcentaje = Math.round((actividad.progreso.puntajeObtenido /
+                actividad.progreso.puntajeTotalPosible) * 100); %>
+
+                <article
+                  class="relative group flex flex-col bg-white dark:bg-slate-800 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 opacity-90 hover:opacity-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+                >
+                  <a
+                    href="/actividad/<%= actividad._id %>/resultados"
+                    class="absolute inset-0 z-10"
+                    aria-label="Ver resultados de <%= actividad.titulo %>"
+                  ></a>
+
                   <div
-                    class="flex border-b border-[#d0dbe7] dark:border-slate-700 px-4 gap-8"
+                    class="flex p-4 gap-4 items-center border-b border-slate-100 dark:border-slate-700/50"
                   >
-                    <a
-                      id="tab-pendientes"
-                      href="#pendientes"
-                      class="tab-link flex items-center justify-center gap-2 border-b-[3px] pb-[13px] pt-4 cursor-pointer"
-                    >
-                      <span class="material-symbols-outlined text-lg"
-                        >pending_actions</span
-                      >
-                      <p class="text-sm font-bold...">
-                        Pendientes (<%= pendientes.length %>)
-                      </p>
-                    </a>
-                    <a
-                      id="tab-completadas"
-                      href="#completadas"
-                      class="tab-link flex items-center justify-center gap-2 border-b-[3px] pb-[13px] pt-4 cursor-pointer"
-                    >
-                      <span class="material-symbols-outlined text-lg"
-                        >task_alt</span
-                      >
-                      <p class="text-sm font-bold...">
-                        Completadas (<%= completadas.length %>)
-                      </p>
-                    </a>
-                  </div>
-                </div>
-
-                <div
-                  id="section-pendientes"
-                  class="tab-content grid grid-cols-1 md:grid-cols-2 gap-2"
-                >
-                  <% if (pendientes.length === 0) { %>
-                  <p class="col-span-full text-center text-slate-500 py-8">
-                    ¡No tienes actividades pendientes!
-                  </p>
-                  <% } %>
-                  <% pendientes.forEach(actividad => { %>
-                  <div class="p-4 @container">
                     <div
-                      class="flex flex-col items-stretch justify-start rounded-xl @xl:flex-row @xl:items-start bg-white dark:bg-slate-800/50 shadow-sm hover:shadow-lg transition-shadow duration-300 border border-transparent dark:border-slate-700/50"
-                    >
-                      <div
-                        class="w-full @xl:w-1/3 h-40 @xl:h-auto bg-center bg-no-repeat bg-cover rounded-t-lg @xl:rounded-l-lg @xl:rounded-r-none"
-                        style="
-                          background-image: url(&quot;<%= actividad.imagenUrl %>&quot;);
-                        "
-                      ></div>
-                      <div
-                        class="flex w-full min-w-72 grow flex-col items-stretch justify-start gap-3 p-4"
+                      class="size-16 rounded-lg bg-cover bg-center shrink-0"
+                      style="
+                        background-image: url(&quot;<%= actividad.imagenUrl %>&quot;);
+                      "
+                    ></div>
+                    <div>
+                      <h3
+                        class="text-base font-bold text-slate-900 dark:text-white line-clamp-1"
                       >
-                        <p
-                          class="text-[#0e141b] dark:text-slate-50 text-lg font-bold..."
-                        >
-                          <%= actividad.titulo %>
-                        </p>
-                        <div class="flex flex-wrap items-center gap-2">
-                          <span
-                            class="text-xs font-medium text-blue-800 bg-blue-100..."
-                            ><%= actividad.tema %></span
-                          >
-                          <span
-                            class="text-xs font-medium text-amber-800 bg-amber-100..."
-                            ><%= actividad.dificultad %></span
-                          >
-                        </div>
-                        <div
-                          class="flex items-end gap-3 justify-between mt-auto pt-3"
-                        >
-                          <a
-                            href="/actividad/<%= actividad._id %>"
-                            class="flex w-full sm:w-auto min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-6 bg-primary text-slate-50 text-sm font-medium..."
-                          >
-                            <span class="truncate">Comenzar</span>
-                          </a>
-                        </div>
-                      </div>
+                        <%= actividad.titulo %>
+                      </h3>
+                      <p class="text-sm text-slate-500 dark:text-slate-400">
+                        <%= actividad.tema %>
+                      </p>
                     </div>
                   </div>
-                  <% }) %>
-                </div>
 
-                <div
-                  id="section-completadas"
-                  class="tab-content mt-10 grid grid-cols-1 md:grid-cols-2 gap-2 hidden"
-                >
-                  <% if (completadas.length > 0) { %>
-                  <h2
-                    class="col-span-full text-2xl font-bold text-slate-800 dark:text-slate-200 mb-4 px-4"
+                  <div
+                    class="p-4 bg-slate-50 dark:bg-slate-800/50 flex justify-between items-center relative"
                   >
-                    Actividades Completadas
-                  </h2>
-                  <% } else { %>
-                  <p class="col-span-full text-center text-slate-500 py-8">
-                    Aún no has completado ninguna actividad.
-                  </p>
-                  <% } %>
-
-                  <% completadas.forEach(actividad => { %>
-                  <div class="p-4 @container opacity-70">
-                    <div
-                      class="flex flex-col items-stretch justify-start rounded-xl @xl:flex-row @xl:items-start bg-white dark:bg-slate-800/50 shadow-sm border border-transparent dark:border-slate-700/50"
-                    >
-                      <div
-                        class="w-full @xl:w-1/3 h-40 @xl:h-auto bg-center bg-no-repeat bg-cover rounded-t-lg @xl:rounded-l-lg @xl:rounded-r-none"
-                        style="
-                          background-image: url(&quot;<%= actividad.imagenUrl %>&quot;);
-                        "
-                      ></div>
-                      <div
-                        class="flex w-full min-w-72 grow flex-col items-stretch justify-start gap-3 p-4"
+                    <div class="flex flex-col">
+                      <span
+                        class="text-xs text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider"
+                        >Calificación</span
                       >
-                        <p
-                          class="text-[#0e141b] dark:text-slate-50 text-lg font-bold..."
-                        >
-                          <%= actividad.titulo %>
-                        </p>
-                        <div class="flex flex-wrap items-center gap-2">
-                          <span
-                            class="text-xs font-medium text-blue-800 bg-blue-100..."
-                            ><%= actividad.tema %></span
-                          >
-                          <span
-                            class="text-xs font-medium text-amber-800 bg-amber-100..."
-                            ><%= actividad.dificultad %></span
-                          >
-                        </div>
-                        <div class="mt-auto pt-3">
-                          <% const porcentaje =
-                          Math.round((actividad.progreso.puntajeObtenido /
-                          actividad.progreso.puntajeTotalPosible) * 100); %>
-                          <p
-                            class="text-lg font-bold text-green-600 dark:text-green-400"
-                          >
-                            ¡Completada! Nota:
-                            <%= porcentaje %>% (<%=
-                              actividad.progreso.puntajeObtenido %>/<%=
-                              actividad.progreso.puntajeTotalPosible %>
-                            pts)
-                          </p>
-                        </div>
-                      </div>
+                      <span
+                        class="font-bold text-slate-700 dark:text-slate-300"
+                      >
+                        <%= actividad.progreso.puntajeObtenido %> / <%=
+                        actividad.progreso.puntajeTotalPosible %> pts
+                      </span>
+                    </div>
+
+                    <div
+                      class="px-3 py-1 rounded-full text-sm font-bold <%= (porcentaje >= 70) ? 'text-green-600 bg-green-50 dark:bg-green-900/20 dark:text-green-400' : 'text-orange-600 bg-orange-50 dark:bg-orange-900/20 dark:text-orange-400' %>"
+                    >
+                      <%= porcentaje %>%
+                    </div>
+
+                    <div
+                      class="absolute inset-0 bg-primary/10 dark:bg-primary/20 backdrop-blur-[1px] opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                    >
+                      <span
+                        class="bg-white dark:bg-slate-900 text-primary px-3 py-1 rounded-full text-xs font-bold shadow-sm border border-primary/20"
+                      >
+                        Ver Resultados
+                      </span>
                     </div>
                   </div>
-                  <% }) %>
-                </div>
-              </main>
+                </article>
+                <% }); %>
+              </div>
+              <% } %>
             </div>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   </body>
 </html>

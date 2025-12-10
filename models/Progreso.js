@@ -25,6 +25,13 @@ const ProgresoSchema = new Schema(
       type: Number,
       required: true,
     },
+    respuestasDetalle: [
+      {
+        preguntaId: { type: Schema.Types.ObjectId },
+        alternativaSeleccionadaId: { type: Schema.Types.ObjectId },
+        esCorrecta: { type: Boolean },
+      },
+    ],
     fechaCompletado: {
       type: Date,
       default: Date.now,

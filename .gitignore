@@ -1,18 +1,41 @@
-# Dependencias de Node
+# --- Dependencias ---
 node_modules/
-.env
+package-lock.json  # Opcional: A veces es mejor subirlo, pero si da conflictos, ignóralo.
 
-# Archivos de caché y logs
+# --- Variables de Entorno y Secretos (¡CRÍTICO!) ---
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# --- Archivos de Sistema Operativo ---
+.DS_Store
+Thumbs.db
+*.log
+
+# --- Archivos Generados / Compilados ---
+dist/
+build/
 npm-debug.log*
-yarn-error.log
+yarn-debug.log*
+yarn-error.log*
 
-# Archivos de entorno
-.env
-
-# Caché de Python
+# --- Archivos de Python (Si te quedó alguno residual) ---
 __pycache__/
 *.pyc
-
-# Entornos virtuales de Python
-.venv/
 venv/
+.venv/
+ia_services/
+
+# --- Archivos Subidos por Usuarios (Uploads) ---
+# Ignoramos todo el contenido de uploads, pero mantenemos la carpeta vacía con .gitkeep
+public/uploads/*
+!public/uploads/.gitkeep
+public/uploads/actividades/*
+!public/uploads/actividades/.gitkeep
+
+# --- IDEs y Editores ---
+.vscode/
+.idea/
+*.swp

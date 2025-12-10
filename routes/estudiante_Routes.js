@@ -18,7 +18,7 @@ router.post(
   isAuthenticated,
   studentController.handleEnviarActividad,
 );
-router.get("/progreso", isAuthenticated, studentController.showProgreso);
+
 router.get("/perfil", isAuthenticated, studentController.showPerfil);
 router.post(
   "/perfil/actualizar-info",
@@ -40,6 +40,12 @@ router.post(
   "/perfil/eliminar-foto",
   isAuthenticated,
   studentController.handleDeletePhoto,
+);
+
+router.get(
+  "/actividad/:id/resultados", // Nueva ruta
+  isAuthenticated,
+  studentController.showResultadosActividad,
 );
 
 module.exports = router;

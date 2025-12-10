@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html class="light" lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Reportes y Calificaciones</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+      rel="stylesheet"
+    />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#4396ea",
+              "background-light": "#f6f7f8",
+              "background-dark": "#111921",
+            },
+            fontFamily: {
+              display: ["Inter", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="stylesheet" href="/css/main.css" />
+  </head>
+  <body
+    class="bg-background-light dark:bg-background-dark font-display text-[#0e141b] dark:text-slate-200 h-screen overflow-hidden"
+  >
+    <div class="flex h-full w-full">
+      <%- include('../partials/siderbar_profesor', { active: active, user: user
+      }) %>
+
+      <main class="flex-1 p-8 h-full overflow-y-auto">
+        <div class="max-w-[1400px] mx-auto">
+          <header
+            class="mb-8 flex flex-col md:flex-row md:justify-between md:items-end gap-4"
+          >
+            <div>
+              <h1
+                class="text-slate-900 dark:text-white text-3xl md:text-4xl font-black leading-tight"
+              >
+                Reportes Académicos
+              </h1>
+              <p class="mt-2 text-slate-500 dark:text-slate-400 text-lg">
+                Notas calculadas en escala vigesimal (0-20).
+              </p>
+            </div>
+            <button
+              id="btn-exportar"
+              onclick="generarPDF()"
+              class="inline-flex items-center justify-center gap-2 bg-red-600 text-white font-semibold py-2.5 px-6 rounded-xl hover:bg-red-700 transition-colors shadow-sm hover:shadow-md active:scale-95"
+            >
+              <span class="material-symbols-outlined text-xl"
+                >picture_as_pdf</span
+              >
+              <span>Exportar PDF</span>
+            </button>
+          </header>
+
+          <div class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm mb-8">
+            <h3
+              class="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-4"
+            >
+              Filtrar Actividades (Selecciona para promediar)
+            </h3>
+            <div class="flex flex-wrap gap-4" id="filtros-container">
+              <% actividades.forEach(act => { %>
+              <label
+                class="inline-flex items-center gap-2 cursor-pointer p-2 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+              >
+                <input
+                  type="checkbox"
+                  checked
+                  value="<%= act._id %>"
+                  data-titulo="<%= act.titulo %>"
+                  class="filtro-actividad form-checkbox h-5 w-5 text-primary rounded border-slate-300 focus:ring-primary"
+                  onchange="actualizarTabla()"
+                />
+                <span
+                  class="text-sm font-medium text-slate-700 dark:text-slate-300 select-none"
+                >
+                  <%= act.titulo %>
+                </span>
+              </label>
+              <% }) %>
+            </div>
+          </div>
+
+          <div
+            class="bg-white dark:bg-slate-900 rounded-xl shadow-sm overflow-hidden border border-slate-200 dark:border-slate-700"
+          >
+            <div class="overflow-x-auto">
+              <table id="tabla-notas" class="w-full text-sm text-left">
+                <thead
+                  class="bg-slate-50 dark:bg-slate-800 text-xs text-slate-500 dark:text-slate-400 uppercase border-b border-slate-200 dark:border-slate-700"
+                >
+                  <tr>
+                    <th
+                      class="py-4 px-6 sticky left-0 bg-slate-50 dark:bg-slate-800 z-10 w-64 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]"
+                    >
+                      Estudiante
+                    </th>
+                    <% actividades.forEach(act => { %>
+                    <th
+                      class="py-4 px-6 text-center col-actividad"
+                      data-col-id="<%= act._id %>"
+                    >
+                      <%= act.titulo %>
+                      <span class="block text-[10px] normal-case opacity-70"
+                        ><%= act.tema %></span
+                      >
+                    </th>
+                    <% }) %>
+                    <th
+                      class="py-4 px-6 text-center font-black text-slate-800 dark:text-white bg-blue-50/50 dark:bg-blue-900/10"
+                    >
+                      Promedio<br />(0-20)
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
+                  <% if (estudiantes.length === 0) { %>
+                  <tr>
+                    <td colspan="100%" class="p-8 text-center text-slate-500">
+                      No hay estudiantes registrados.
+                    </td>
+                  </tr>
+                  <% } %>
+                  <% estudiantes.forEach(est => { %>
+                  <tr
+                    class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group"
+                  >
+                    <td
+                      class="py-3 px-6 font-medium text-slate-900 dark:text-white sticky left-0 bg-white dark:bg-slate-900 group-hover:bg-slate-50 dark:group-hover:bg-slate-800/50 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]"
+                    >
+                      <%= est.apellidos %>,
+                      <%= est.nombres %>
+                      <span class="block text-xs font-normal text-slate-500"
+                        ><%= est.email %></span
+                      >
+                    </td>
+
+                    <% actividades.forEach(act => { const key =
+                    `${est._id}_${act._id}`; const datos = mapaProgreso[key]; %>
+                    <td
+                      class="py-3 px-6 text-center col-actividad"
+                      data-col-id="<%= act._id %>"
+                    >
+                      <% if (datos) { 
+                           // CORRECCIÓN DEL ERROR: Cálculo limpio sin comentarios rotos
+                           // Calculamos la nota individual en base 20
+                           const notaInd = Math.round((datos.porcentaje / 100) * 20);
+                      %>
+                      <div class="flex flex-col items-center">
+                        <span
+                          class="font-bold text-slate-700 dark:text-slate-300 text-base"
+                        >
+                          <%= notaInd %>
+                        </span>
+                        <span class="hidden valor-porcentaje"
+                          ><%= datos.porcentaje %></span
+                        >
+                      </div>
+                      <% } else { %>
+                      <span class="text-slate-300 dark:text-slate-600">-</span>
+                      <span class="hidden valor-porcentaje">0</span>
+                      <% } %>
+                    </td>
+                    <% }) %>
+
+                    <td
+                      class="py-3 px-6 text-center font-bold text-lg celda-promedio text-primary"
+                    >
+                      0
+                    </td>
+                  </tr>
+                  <% }) %>
+                </tbody>
+                <tfoot
+                  class="bg-slate-100 dark:bg-slate-800 border-t-2 border-slate-300 dark:border-slate-600"
+                >
+                  <tr>
+                    <td
+                      class="py-4 px-6 font-bold text-slate-800 dark:text-white sticky left-0 bg-slate-100 dark:bg-slate-800 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]"
+                    >
+                      PROMEDIO GENERAL
+                    </td>
+                    <% actividades.forEach(act => { %>
+                    <td
+                      class="py-4 px-6 text-center font-bold text-slate-400 dark:text-slate-500 col-actividad"
+                      data-col-id="<%= act._id %>"
+                    >
+                      -
+                    </td>
+                    <% }) %>
+                    <td
+                      class="py-4 px-6 text-center font-black text-xl text-primary"
+                      id="promedio-general-total"
+                    >
+                      0
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      // 1. Función Principal: Calcula Notas en base 20
+      function actualizarTabla() {
+        const checkboxes = document.querySelectorAll(".filtro-actividad");
+        const actividadesActivas = Array.from(checkboxes)
+          .filter((cb) => cb.checked)
+          .map((cb) => cb.value);
+
+        // A. Visibilidad de Columnas
+        document.querySelectorAll(".col-actividad").forEach((col) => {
+          const id = col.getAttribute("data-col-id");
+          col.style.display = actividadesActivas.includes(id)
+            ? "table-cell"
+            : "none";
+        });
+
+        // B. Cálculos por Fila (Estudiante)
+        const filas = document.querySelectorAll("#tabla-notas tbody tr");
+        let sumaPromediosAula = 0;
+        let conteoEstudiantes = 0;
+
+        filas.forEach((fila) => {
+          let sumaPorcentajes = 0;
+          let notasContadas = 0;
+
+          const celdasActividad = fila.querySelectorAll(".col-actividad");
+          celdasActividad.forEach((celda) => {
+            const id = celda.getAttribute("data-col-id");
+            if (actividadesActivas.includes(id)) {
+              const valorSpan = celda.querySelector(".valor-porcentaje");
+              if (valorSpan) {
+                // Sumamos el porcentaje crudo (0-100)
+                sumaPorcentajes += parseFloat(valorSpan.innerText);
+                notasContadas++;
+              }
+            }
+          });
+
+          // 1. Calculamos el promedio en porcentaje primero
+          const promedioPct =
+            notasContadas > 0 ? sumaPorcentajes / notasContadas : 0;
+
+          // 2. CONVERSIÓN A ESCALA 20: (Porcentaje / 100) * 20
+          const notaVigesimal = Math.round((promedioPct / 100) * 20);
+
+          // Actualizar celda
+          const celdaProm = fila.querySelector(".celda-promedio");
+          celdaProm.innerText = notaVigesimal;
+
+          // Colores de nota (Rojo < 11, Azul >= 11)
+          if (notaVigesimal >= 11) {
+            celdaProm.className =
+              "py-3 px-6 text-center font-bold text-lg celda-promedio text-blue-600 dark:text-blue-400";
+          } else {
+            celdaProm.className =
+              "py-3 px-6 text-center font-bold text-lg celda-promedio text-red-600 dark:text-red-400";
+          }
+
+          sumaPromediosAula += notaVigesimal;
+          conteoEstudiantes++;
+        });
+
+        // C. Promedio General del Aula
+        const promedioGeneral =
+          conteoEstudiantes > 0
+            ? (sumaPromediosAula / conteoEstudiantes).toFixed(1)
+            : "0";
+        const footerTotal = document.getElementById("promedio-general-total");
+        footerTotal.innerText = promedioGeneral;
+
+        // Color del promedio general
+        if (parseFloat(promedioGeneral) >= 11)
+          footerTotal.className =
+            "py-4 px-6 text-center font-black text-xl text-blue-600 dark:text-blue-400";
+        else
+          footerTotal.className =
+            "py-4 px-6 text-center font-black text-xl text-red-600 dark:text-red-400";
+      }
+
+      // 2. Función PDF
+      async function generarPDF() {
+        try {
+          // Aseguramos acceso a la librería
+          const { jsPDF } = window.jspdf;
+          if (!jsPDF) {
+            alert(
+              "Error: La librería PDF no cargó correctamente. Recarga la página.",
+            );
+            return;
+          }
+
+          const doc = new jsPDF("l", "mm", "a4"); // Horizontal
+
+          // Título
+          doc.setFontSize(16);
+          doc.text(
+            "Reporte de Notas (Escala 20) - Sistema Educativo IA",
+            14,
+            20,
+          );
+          doc.setFontSize(10);
+          doc.text(
+            `Fecha: ${new Date().toLocaleDateString()} - Generado por: <%= user.nombres %>`,
+            14,
+            26,
+          );
+
+          // Datos Visibles
+          const checkboxes = document.querySelectorAll(
+            ".filtro-actividad:checked",
+          );
+          const titulosActividades = Array.from(checkboxes).map((cb) =>
+            cb.getAttribute("data-titulo"),
+          );
+          const idsActivos = Array.from(checkboxes).map((cb) => cb.value);
+
+          // Cabecera Tabla PDF
+          const head = [["Estudiante", ...titulosActividades, "Promedio"]];
+
+          // Cuerpo Tabla PDF
+          const body = [];
+          const filas = document.querySelectorAll("#tabla-notas tbody tr");
+
+          filas.forEach((fila) => {
+            const nombre = fila
+              .querySelector("td:first-child")
+              .innerText.split("\n")[0]
+              .trim();
+            const notasFila = [];
+
+            // Solo celdas visibles
+            const celdas = fila.querySelectorAll(".col-actividad");
+            celdas.forEach((celda) => {
+              if (idsActivos.includes(celda.getAttribute("data-col-id"))) {
+                // Obtenemos la nota visible (ya convertida a 20)
+                const valor =
+                  celda.querySelector("span.font-bold")?.innerText || "-";
+                notasFila.push(valor);
+              }
+            });
+
+            const promedio = fila.querySelector(".celda-promedio").innerText;
+            body.push([nombre, ...notasFila, promedio]);
+          });
+
+          // Pie de tabla PDF
+          const promedioGen = document.getElementById(
+            "promedio-general-total",
+          ).innerText;
+          body.push([
+            "PROMEDIO AULA",
+            ...Array(idsActivos.length).fill("-"),
+            promedioGen,
+          ]);
+
+          // Generar
+          doc.autoTable({
+            startY: 35,
+            head: head,
+            body: body,
+            theme: "grid",
+            headStyles: { fillColor: [67, 150, 234], halign: "center" },
+            columnStyles: {
+              0: { cellWidth: 60 }, // Columna nombre más ancha
+            },
+            styles: { fontSize: 10, halign: "center" },
+            footStyles: {
+              fillColor: [240, 240, 240],
+              textColor: 0,
+              fontStyle: "bold",
+            },
+          });
+
+          doc.save("Reporte_Notas_20.pdf");
+        } catch (e) {
+          console.error(e);
+          alert(
+            "Hubo un error al generar el PDF. Revisa la consola para más detalles.",
+          );
+        }
+      }
+
+      // Iniciar al cargar
+      document.addEventListener("DOMContentLoaded", actualizarTabla);
+    </script>
+  </body>
+</html>
