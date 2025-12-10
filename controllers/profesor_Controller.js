@@ -5,7 +5,7 @@ const Actividad = require("../models/Actividad");
 const Progreso = require("../models/Progreso");
 const bcrypt = require("bcrypt");
 const fs = require("node:fs");
-const { generarActividadLocal } = require("../utils/ia_generator");
+const { generarActividadLocal } = require("./ia_generator");
 
 // --- (showDashboard se queda igual) ---
 exports.showDashboard = async (req, res) => {
